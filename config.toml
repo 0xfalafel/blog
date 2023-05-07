@@ -1,4 +1,4 @@
-baseURL = 'http://example.org/'
+baseURL = 'https://blog.lasne.pro/'
 languageCode = 'en-us'
 title = "Olivier LASNE"
 theme = 'ghostwriter'
