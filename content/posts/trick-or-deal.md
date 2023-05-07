@@ -134,7 +134,7 @@ End of assembler dump.
 </code></pre></div>
 {{< /rawhtml >}}
 
-The content of **`storage`** is written by the function **`update_weapons()`**. `update_weapens()` is called by `main` at the start of the program:
+The content of **`storage`** is written by the function **`update_weapons()`**. `update_weapons()` is called by `main` at the start of the program:
 
 ```C
 void update_weapons(void)
@@ -186,7 +186,7 @@ void printStorage(void)
 </code></pre></div>
 {{< /rawhtml >}}
 
-### free()
+### Free()
 
 The *4th action* call the function `steal()` that **free** the variable **`storage`**.
 
@@ -204,21 +204,12 @@ void steal(void)
 }
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
+Let's see this in action with *gdb*.
 
 {{< rawhtml >}}
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">$ ./trick_or_deal
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">$ gdb ./trick_or_deal
+
+<font color="#F92672"><b>pwndbg&gt; </b></font>run
 💵 <font color="#AE81FF"><b> Welcome to the Intergalactic Weapon Black Market 💵</b></font>
 [...]
 
@@ -263,8 +254,122 @@ Size: 0x20d11
 
 
 
+### Malloc()
+
+The *3rd action* call the function `make_offer()` that **malloc** a memory of arbitrary size. And let us write data in this new *chunk*.
+
+```C
+void make_offer(void)
+
+{
+  char anwser [3];
+  size_t size;
+  
+  size = 0;
+  memset(anwser,0,3);
+  fwrite("\n[*] Are you sure that you want to make an offer(y/n): ",1,55,stdout);
+  read(0,anwser,2);
+
+  if (anwser[0] == 'y') {
+    fwrite("\n[*] How long do you want your offer to be? ",1,45,stdout);
+    size = read_num();
+    offer = malloc(size);
+
+    fwrite("\n[*] What can you offer me? ",1,28,stdout);
+    read(0,offer,size);
+
+    fwrite("[!] That\'s not enough!\n",1,23,stdout);
+  }
+
+  else {
+    fwrite("[!] Don\'t bother me again.\n",1,27,stdout);
+  }
+
+  return;
+}
+```
+
+
+Again, let's do this in *gdb* an observe the memory with `vis_heap_chunks`.
+
+{{< rawhtml >}}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">$ gdb -q ./trick_or_deal
+
+<font color="#F92672"><b>pwndbg&gt; </b></font>r
+Starting program: <font color="#A6E22E">./trick_or_deal</font> 
+
+💵 <font color="#AE81FF"><b> Welcome to the Intergalactic Weapon Black Market 💵</b></font>
+[...]
+
+<font color="#AE81FF"><b>[*] What do you want to do? 3</b></font>
+
+<font color="#AE81FF"><b>[*] Are you sure that you want to make an offer(y/n): y</b></font>
+
+<font color="#AE81FF"><b>[*] How long do you want your offer to be? 32</b></font>
+
+<font color="#AE81FF"><b>[*] What can you offer me? YYYYYYYYYYYYYYYY</b></font>
+<font color="#AE81FF"><b>[!] That&apos;s not enough!</b></font>
+
+<font color="#AE81FF"><b>^C</b></font>
+<font color="#AE81FF"><b>Program received signal SIGINT, Interrupt.</b></font>
+<font color="#66D9EF"><b>0x00007ffff7ee3002</b></font> in <font color="#F4BF75">read</font> () from <font color="#A6E22E">./glibc/libc.so.6</font>
+
+<font color="#F92672"><b>pwndbg&gt; </b></font>vis_heap_chunks 2 0x555555603290
+
+0x555555603290	<font color="#F4BF75">0x0000000000000000</font>	<font color="#A1EFE4">0x0000000000000061</font>	<font color="#A1EFE4">........a.......</font>
+0x5555556032a0	<font color="#A1EFE4">0x67694c206568540a</font>	<font color="#A1EFE4">0x0a72656261737468</font>	<font color="#A1EFE4">.The Lightsaber.</font>
+0x5555556032b0	<font color="#A1EFE4">0x6e6f53206568540a</font>	<font color="#A1EFE4">0x7765726353206369</font>	<font color="#A1EFE4">.The Sonic Screw</font>
+0x5555556032c0	<font color="#A1EFE4">0x0a0a726576697264</font>	<font color="#A1EFE4">0x0a73726573616850</font>	<font color="#A1EFE4">driver..Phasers.</font>
+0x5555556032d0	<font color="#A1EFE4">0x696f4e206568540a</font>	<font color="#A1EFE4">0x6b63697243207973</font>	<font color="#A1EFE4">.The Noisy Crick</font>
+0x5555556032e0	<font color="#A1EFE4">0x00000000000a7465</font>	<font color="#A1EFE4">0x0000555555400be6</font>	<font color="#A1EFE4">et........@UUU..</font>
+0x5555556032f0	<font color="#A1EFE4">0x0000000000000000</font>	<font color="#AE81FF">0x0000000000000031</font>	<font color="#AE81FF">........1.......</font>
+0x555555603300	<font color="#AE81FF">0x5959595959595959</font>	<font color="#AE81FF">0x5959595959595959</font>	<font color="#AE81FF">YYYYYYYYYYYYYYYY</font>
+0x555555603310	<font color="#AE81FF">0x000000000000000a</font>	<font color="#AE81FF">0x0000000000000000</font>	<font color="#AE81FF">................</font>
+0x555555603320	<font color="#AE81FF">0x0000000000000000</font>	<font color="#A6E22E">0x0000000000020ce1</font>	<font color="#A6E22E">................</font>	 &lt;-- Top chunk
+</code></pre></div>
+{{< /rawhtml >}}
+
+
+### Secret function
+
+The binary has a secret function `unlock_storage()`. We can see below in Ghidra. You can also see it in *rizin* or *radare2* using the `afl` command.
+
+![Functions in Ghidra](/trick_or_deal/trick_or_deal_functions2.png)
+
+Calling this function gives us a **shell**.
+
+```C
+void unlock_storage(void)
+
+{
+  fprintf(stdout,"\n%s[*] Bruteforcing Storage Access Code . . .%s\n","\x1b[5;32m","\x1b[25;0m");
+  sleep(2);
+  fprintf(stdout,"\n%s* Storage Door Opened *%s\n","\x1b[1;32m","\x1b[1;0m");
+  system("sh");
+  return;
+}
+```
+
+## Recap
+
+The binary has a variable **`storage`** that holds some *ascii data* and a **pointer** to `printStorage()`. The binary also has a secret function `unlock_storage()` that gives us a shell.
+
+* action **1** will **follow the pointer** in `storage` to call `printStorage()`. This prints the data of `storage`.
+* action **3** *malloc()* an arbitrary size, and write data into this new memory.
+* action **4** *free()* the variable `storage`.
+
+
+>  If you haven't solved the binary yet. Stop here, and try to exploit the binary.
+
+
+## The Bug
+
+We have a **Use-After-Free** bug, which mean we can 
+
+
+
+
 {{< rawhtml >}}
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">
 </code></pre></div>
 {{< /rawhtml >}}
-
