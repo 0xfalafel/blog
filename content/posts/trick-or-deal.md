@@ -1,12 +1,12 @@
 ---
 title: "Writeup: Trick or Deal"
 date: 2023-05-05T19:54:04+02:00
-draft: true
+draft: false
 ---
 
 # Introduction
 
-**Trick or Deal** is a *Medium* retired [hackthebox](https://app.hackthebox.com/challenges/trick-or-deal) ***pwn*** challenge.
+**Trick or Deal** is a *Medium* retired [hackthebox](https://app.hackthebox.com/challenges/trick-or-deal) ***pwn*** challenge. It has 97 solves and no writeup at the publication of this blog post.
 
 This binary has a secret function `unlock_storage()`, and a **Use-After-Free** vulnerability.
 
@@ -500,7 +500,7 @@ We can run our script with debugging options `$ ./xpl.py NOASLR DEBUG GDB`.
 {{< /rawhtml >}}
 
 
-We have filled the buffer with `'Y'` and there is no  `'\x00'` left that would indicate an *end of file*.
+We have filled the buffer with `'Y'` and there is no  `'\x00'` left that would indicate a *end of file*.
 The pointer will be considered as part of the string and will be printed when we call `printStorage()`.
 
 
@@ -534,7 +534,7 @@ $2 = {&lt;text variable, no debug info&gt;} <font color="#66D9EF">0x555555400eff
 {{< /rawhtml >}}
 
 
-Now, let's calculate the offset between the two function with *python*.
+Now, let's calculate the offset between the two functions with *python*.
 
 {{< rawhtml >}}
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">$ python3
@@ -588,7 +588,7 @@ Our heap look like this now.
 
 ### Call `unlock_storage()`
 
-All that's left to do, is to call the function pointer, with the first action.
+All that's left to do is to call the function pointer, with the first action.
 
 {{< rawhtml >}}
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">[*] What do you want to do? <font color="#F92672"><b>$</b></font> 1
@@ -642,7 +642,7 @@ context.terminal = ['tilix', '--action=session-add-right', '-e']
 # Set up pwntools for the correct architecture
 exe = context.binary = ELF('trick_or_deal')
 
-# Many built-in settings can be controlled on the command-line and show up
+# Many built-in settings can be controlled on the command line and show up
 # in "args".  For example, to dump all data sent/received, and disable ASLR
 # for all created processes...
 # ./exploit.py DEBUG NOASLR
@@ -729,7 +729,7 @@ Let's attack the remote server.
 
 {{< rawhtml >}}
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">$ ./xpl.py REMOTE 64.227.46.56:32650
-[<font color="#66D9EF"><b>*</b></font>] &apos;/home/olivier/projets/hackthebox/challenge/pwn/Trick_or_Deal/trick_or_deal&apos;
+[<font color="#66D9EF"><b>*</b></font>] &apos;/home/hackthebox/challenge/pwn/Trick_or_Deal/trick_or_deal&apos;
     Arch:     amd64-64-little
     RELRO:    <font color="#A6E22E">Full RELRO</font>
     Stack:    <font color="#A6E22E">Canary found</font>
