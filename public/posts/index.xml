@@ -2,19 +2,42 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Olivier LASNE</title>
-    <link>http://example.org/posts/</link>
+    <link>https://blog.lasne.pro/posts/</link>
     <description>Recent content in Posts on Olivier LASNE</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 05 May 2023 18:50:40 +0200</lastBuildDate><atom:link href="http://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 06 May 2023 17:45:40 +0200</lastBuildDate><atom:link href="https://blog.lasne.pro/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Colored Terminal in Blog Posts</title>
+      <link>https://blog.lasne.pro/posts/colored-terminal-in-blog-posts/</link>
+      <pubDate>Sat, 06 May 2023 17:45:40 +0200</pubDate>
+      
+      <guid>https://blog.lasne.pro/posts/colored-terminal-in-blog-posts/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Writeup: Trick or Deal</title>
+      <link>https://blog.lasne.pro/posts/trick-or-deal/</link>
+      <pubDate>Fri, 05 May 2023 19:54:04 +0200</pubDate>
+      
+      <guid>https://blog.lasne.pro/posts/trick-or-deal/</guid>
+      <description>Introduction Trick or Deal is a Medium retired hackthebox pwn challenge.
+This binary has a secret function unlock_storage(), and a Use-After-Free vulnerability.
+To exploit this binary, I will use pwndbg and pwntools.
+Ghidra was also used for the analysis. The snippets of C code were obtained using the Ghidra decompiler.
+Analysis The binary gives us a menu with 5 actions. Each action will call a function.
+-_-_-_-_-_-_-_-_-_-_-_-_- | | | [1] See the Weaponry | | [2] Buy Weapons | | [3] Make an Offer | | [4] Try to Steal | | [5] Leave | | | -_-_-_-_-_-_-_-_-_-_-_-_- [*] What do you want to do?</description>
+    </item>
+    
     <item>
       <title>Hello world</title>
-      <link>http://example.org/posts/my-first-post/</link>
+      <link>https://blog.lasne.pro/posts/my-first-post/</link>
       <pubDate>Fri, 05 May 2023 18:50:40 +0200</pubDate>
       
-      <guid>http://example.org/posts/my-first-post/</guid>
+      <guid>https://blog.lasne.pro/posts/my-first-post/</guid>
       <description>Welcome Welcome to my blog, I promise that there will be more content.
- ____________ &amp;lt; Hi Friends &amp;gt; ------------ \ . . \ / `. .&#39; &amp;quot; \ .---. &amp;lt; &amp;gt; &amp;lt; &amp;gt; .---. \ | \ \ - ~ ~ - / / | _____ ..-~ ~-..-~ | | \~~~\.&#39; `./~~~/ --------- \__/ \__/ .&#39; O \ / / \ &amp;quot; (_____, `._.&#39; | } \/~~~/ `----. / } | / \__/ `-.</description>
+____________ &amp;lt; Hi Friends &amp;gt; ------------ \ . . \ / `. .&amp;#39; &amp;#34; \ .---. &amp;lt; &amp;gt; &amp;lt; &amp;gt; .---. \ | \ \ - ~ ~ - / / | _____ ..-~ ~-..-~ | | \~~~\.&amp;#39; `./~~~/ --------- \__/ \__/ .&amp;#39; O \ / / \ &amp;#34; (_____, `._.&amp;#39; | } \/~~~/ `----. / } | / \__/ `-.</description>
     </item>
     
   </channel>

@@ -2,17 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://example.org/posts/my-first-post/</loc>
+    <loc>https://blog.lasne.pro/posts/colored-terminal-in-blog-posts/</loc>
+    <lastmod>2023-05-06T17:45:40+02:00</lastmod>
+  </url><url>
+    <loc>https://blog.lasne.pro/</loc>
+    <lastmod>2023-05-06T17:45:40+02:00</lastmod>
+  </url><url>
+    <loc>https://blog.lasne.pro/posts/</loc>
+    <lastmod>2023-05-06T17:45:40+02:00</lastmod>
+  </url><url>
+    <loc>https://blog.lasne.pro/posts/trick-or-deal/</loc>
+    <lastmod>2023-05-05T19:54:04+02:00</lastmod>
+  </url><url>
+    <loc>https://blog.lasne.pro/posts/my-first-post/</loc>
     <lastmod>2023-05-05T18:50:40+02:00</lastmod>
   </url><url>
-    <loc>http://example.org/</loc>
-    <lastmod>2023-05-05T18:50:40+02:00</lastmod>
+    <loc>https://blog.lasne.pro/categories/</loc>
   </url><url>
-    <loc>http://example.org/posts/</loc>
-    <lastmod>2023-05-05T18:50:40+02:00</lastmod>
-  </url><url>
-    <loc>http://example.org/categories/</loc>
-  </url><url>
-    <loc>http://example.org/tags/</loc>
+    <loc>https://blog.lasne.pro/tags/</loc>
   </url>
 </urlset>
