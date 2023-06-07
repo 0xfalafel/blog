@@ -1,6 +1,6 @@
 ---
 title: "Writeup: Trick or Deal"
-date: 2023-05-05T19:54:04+02:00
+date: 2023-06-07T12:54:04+02:00
 draft: false
 ---
 
