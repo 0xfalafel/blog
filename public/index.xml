@@ -6,14 +6,14 @@
     <description>Recent content on Olivier LASNE</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 07 Jul 2024 12:36:00 +0200</lastBuildDate>
+    <lastBuildDate>Mon, 08 Jul 2024 16:28:30 +0200</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Writeup: Workshop Netexec LeHack 2024</title>
       <link>http://localhost:1313/posts/netexec-workshop-lehack2024/</link>
-      <pubDate>Sun, 07 Jul 2024 12:36:00 +0200</pubDate>
+      <pubDate>Mon, 08 Jul 2024 16:28:30 +0200</pubDate>
       <guid>http://localhost:1313/posts/netexec-workshop-lehack2024/</guid>
-      <description>Introduction Cette année encore, @mpgn nous a régalé un workshop Active Directory à LeHack 2024.&#xA;L&amp;rsquo;accès était fourni via un fichier de configuration openvpn.&#xA;Le réseau 10.0.0.0/24 était composé de 4 machines, dans un thème astérix pour cette année.&#xA;Mise en place Pour se connecter, on lance openvpn avec le fichier de configuration fourni.&#xA;sudo openvpn ./lehack019.ovpn Le dernière version de netexec était nécessaire. Le plus simple est de l&amp;rsquo;installer avec pipx.</description>
+      <description>Introduction Cette année encore, @mpgn nous a régalé un workshop Active Directory à LeHack 2024.&#xA;🙏 Je n&amp;rsquo;ai pas d&amp;rsquo;extract BloodHound pour les machines de workshop. Si une quelqu&amp;rsquo;un peut m&amp;rsquo;en transmettre un, j&amp;rsquo;aimerai bien mettre l&amp;rsquo;article à jour et indiquer comment on pouvait détecter certaines failles avec Bloodhound. 🙏&#xA;Je suis joignable via Linkedin, X (Twitter), ou par mail à olivier@lasne.pro. Merci !&#xA;L&amp;rsquo;accès était fourni via un fichier de configuration openvpn.</description>
     </item>
     <item>
       <title>Writeup: Trick or Deal</title>
@@ -21,13 +21,6 @@
       <pubDate>Wed, 07 Jun 2023 12:54:04 +0200</pubDate>
       <guid>http://localhost:1313/posts/trick-or-deal/</guid>
       <description>Introduction Trick or Deal is a Medium retired hackthebox pwn challenge. It has 97 solves and no writeup at the publication of this blog post.&#xA;This binary has a secret function unlock_storage(), and a Use-After-Free vulnerability.&#xA;To exploit this binary, I will use pwndbg and pwntools.&#xA;Ghidra was also used for the analysis. The snippets of C code were obtained using the Ghidra decompiler.&#xA;Analysis The binary gives us a menu with 5 actions.</description>
-    </item>
-    <item>
-      <title>Colored Terminal in Blog Posts</title>
-      <link>http://localhost:1313/posts/colored-terminal-in-blog-posts/</link>
-      <pubDate>Sat, 06 May 2023 17:45:40 +0200</pubDate>
-      <guid>http://localhost:1313/posts/colored-terminal-in-blog-posts/</guid>
-      <description></description>
     </item>
     <item>
       <title>Hello world</title>
