@@ -2,43 +2,39 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Olivier LASNE</title>
-    <link>https://blog.lasne.pro/</link>
+    <link>http://localhost:1313/</link>
     <description>Recent content on Olivier LASNE</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 06 May 2023 17:45:40 +0200</lastBuildDate><atom:link href="https://blog.lasne.pro/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 07 Jul 2024 12:36:00 +0200</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Colored Terminal in Blog Posts</title>
-      <link>https://blog.lasne.pro/posts/colored-terminal-in-blog-posts/</link>
-      <pubDate>Sat, 06 May 2023 17:45:40 +0200</pubDate>
-      
-      <guid>https://blog.lasne.pro/posts/colored-terminal-in-blog-posts/</guid>
-      <description></description>
+      <title>Writeup: Workshop Netexec LeHack 2024</title>
+      <link>http://localhost:1313/posts/netexec-workshop-lehack2024/</link>
+      <pubDate>Sun, 07 Jul 2024 12:36:00 +0200</pubDate>
+      <guid>http://localhost:1313/posts/netexec-workshop-lehack2024/</guid>
+      <description>Introduction Cette année encore, @mpgn nous a régalé un workshop Active Directory à LeHack 2024.&#xA;L&amp;rsquo;accès était fourni via un fichier de configuration openvpn.&#xA;Le réseau 10.0.0.0/24 était composé de 4 machines, dans un thème astérix pour cette année.&#xA;Mise en place Pour se connecter, on lance openvpn avec le fichier de configuration fourni.&#xA;sudo openvpn ./lehack019.ovpn Le dernière version de netexec était nécessaire. Le plus simple est de l&amp;rsquo;installer avec pipx.</description>
     </item>
-    
     <item>
       <title>Writeup: Trick or Deal</title>
-      <link>https://blog.lasne.pro/posts/trick-or-deal/</link>
-      <pubDate>Fri, 05 May 2023 19:54:04 +0200</pubDate>
-      
-      <guid>https://blog.lasne.pro/posts/trick-or-deal/</guid>
-      <description>Introduction Trick or Deal is a Medium retired hackthebox pwn challenge.
-This binary has a secret function unlock_storage(), and a Use-After-Free vulnerability.
-To exploit this binary, I will use pwndbg and pwntools.
-Ghidra was also used for the analysis. The snippets of C code were obtained using the Ghidra decompiler.
-Analysis The binary gives us a menu with 5 actions. Each action will call a function.
--_-_-_-_-_-_-_-_-_-_-_-_- | | | [1] See the Weaponry | | [2] Buy Weapons | | [3] Make an Offer | | [4] Try to Steal | | [5] Leave | | | -_-_-_-_-_-_-_-_-_-_-_-_- [*] What do you want to do?</description>
+      <link>http://localhost:1313/posts/trick-or-deal/</link>
+      <pubDate>Wed, 07 Jun 2023 12:54:04 +0200</pubDate>
+      <guid>http://localhost:1313/posts/trick-or-deal/</guid>
+      <description>Introduction Trick or Deal is a Medium retired hackthebox pwn challenge. It has 97 solves and no writeup at the publication of this blog post.&#xA;This binary has a secret function unlock_storage(), and a Use-After-Free vulnerability.&#xA;To exploit this binary, I will use pwndbg and pwntools.&#xA;Ghidra was also used for the analysis. The snippets of C code were obtained using the Ghidra decompiler.&#xA;Analysis The binary gives us a menu with 5 actions.</description>
     </item>
-    
+    <item>
+      <title>Colored Terminal in Blog Posts</title>
+      <link>http://localhost:1313/posts/colored-terminal-in-blog-posts/</link>
+      <pubDate>Sat, 06 May 2023 17:45:40 +0200</pubDate>
+      <guid>http://localhost:1313/posts/colored-terminal-in-blog-posts/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Hello world</title>
-      <link>https://blog.lasne.pro/posts/my-first-post/</link>
+      <link>http://localhost:1313/posts/my-first-post/</link>
       <pubDate>Fri, 05 May 2023 18:50:40 +0200</pubDate>
-      
-      <guid>https://blog.lasne.pro/posts/my-first-post/</guid>
-      <description>Welcome Welcome to my blog, I promise that there will be more content.
-____________ &amp;lt; Hi Friends &amp;gt; ------------ \ . . \ / `. .&amp;#39; &amp;#34; \ .---. &amp;lt; &amp;gt; &amp;lt; &amp;gt; .---. \ | \ \ - ~ ~ - / / | _____ ..-~ ~-..-~ | | \~~~\.&amp;#39; `./~~~/ --------- \__/ \__/ .&amp;#39; O \ / / \ &amp;#34; (_____, `._.&amp;#39; | } \/~~~/ `----. / } | / \__/ `-.</description>
+      <guid>http://localhost:1313/posts/my-first-post/</guid>
+      <description>Welcome Welcome to my blog, I promise that there will be more content.&#xA;____________ &amp;lt; Hi Friends &amp;gt; ------------ \ . . \ / `. .&amp;#39; &amp;#34; \ .---. &amp;lt; &amp;gt; &amp;lt; &amp;gt; .---. \ | \ \ - ~ ~ - / / | _____ ..-~ ~-..-~ | | \~~~\.&amp;#39; `./~~~/ --------- \__/ \__/ .&amp;#39; O \ / / \ &amp;#34; (_____, `._.&amp;#39; | } \/~~~/ `----. / } | / \__/ `-.</description>
     </item>
-    
   </channel>
 </rss>

