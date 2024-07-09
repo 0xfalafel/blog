@@ -1374,7 +1374,7 @@ Les étapes pour compromettre le second domaine ont été les suivantes.
 
 ## Conclusion
 
-Déjà, un immense merci à [@mpgn](https://x.com/mpgn_x64) et ceux qui ont contribué à cette 3ème édition du workshop.
+Déjà, un immense merci à [@mpgn](https://x.com/mpgn_x64), à [Wilfried](https://www.linkedin.com/in/wilfried-b%C3%A9card-7392a9151/) et à tous ceux qui ont contribué à cette 3ème édition du workshop.
 
 ------------------
 
