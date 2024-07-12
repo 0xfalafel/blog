@@ -4,10 +4,11 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Writeup: Workshop Netexec LeHack 2024 &middot; </title>
-        <meta name="description" content="Introduction Cette année encore, @mpgn nous a régalé un workshop Active Directory à LeHack 2024.
-🙏 Je n&rsquo;ai pas d&rsquo;extract BloodHound pour les machines de workshop. Si une quelqu&rsquo;un peut m&rsquo;en transmettre un, j&rsquo;aimerai bien mettre l&rsquo;article à jour et indiquer comment on pouvait détecter certaines failles avec Bloodhound. 🙏
-Je suis joignable via Linkedin, X (Twitter), ou par mail à olivier@lasne.pro. Merci !
-L&rsquo;accès était fourni via un fichier de configuration openvpn.">
+        <meta name="description" content="Mise à jour du 11 juillet 2024: ajout de ce qui peut être détecté avec Bloodhound. Un grand merci à Maël et Rayan qui m&rsquo;ont partagé leurs extract Bloodhound.
+Introduction Cette année encore, @mpgn nous a régalé un workshop Active Directory à LeHack 2024.
+L&rsquo;accès était fourni via un fichier de configuration openvpn.
+Le réseau 10.0.0.0/24 était composé de 4 machines, dans un thème astérix pour cette année.
+Mise en place Pour se connecter, on lance openvpn avec le fichier de configuration fourni.">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
         <meta name="generator" content="Hugo 0.128.2">
@@ -70,12 +71,11 @@ L&rsquo;accès était fourni via un fichier de configuration openvpn.">
         <div class="post-content clearfix">
     
 
-    <h1 id="introduction">Introduction</h1>
+    <blockquote>
+<p>Mise à jour du 11 juillet 2024: ajout de ce qui peut être détecté avec <strong>Bloodhound</strong>. Un grand merci à <a href="https://www.linkedin.com/in/mael-rolland/">Maël</a> et <a href="https://x.com/rayanlecat">Rayan</a> qui m&rsquo;ont partagé leurs extract <em>Bloodhound</em>.</p>
+</blockquote>
+<h1 id="introduction">Introduction</h1>
 <p>Cette année encore, <a href="https://x.com/mpgn_x64">@mpgn</a> nous a régalé un <a href="https://lehack.org/track/active-directory-pwnage-with-netexec/">workshop Active Directory</a> à <strong>LeHack 2024</strong>.</p>
-<hr>
-<p>🙏 Je n&rsquo;ai pas d&rsquo;<strong>extract BloodHound</strong> pour les machines de workshop. Si une quelqu&rsquo;un peut m&rsquo;en <strong>transmettre un</strong>, j&rsquo;aimerai bien mettre l&rsquo;article à jour et indiquer comment on pouvait détecter certaines failles avec Bloodhound. 🙏<br>
-Je suis joignable via <a href="https://www.linkedin.com/in/olasne/"><strong>Linkedin</strong></a>, <strong>X (Twitter)</strong>, ou par <strong>mail</strong> à <em>olivier@lasne.pro</em>. Merci !</p>
-<hr>
 <p>L&rsquo;accès était fourni via un fichier de configuration <em>openvpn</em>.<br>
 Le réseau <code>10.0.0.0/24</code> était composé de <strong>4 machines</strong>, dans un thème <strong>astérix</strong> pour cette année.</p>
 <h2 id="mise-en-place">Mise en place</h2>
@@ -318,7 +318,7 @@ Petit indice dans le nom de l&rsquo;utilisateur : &ldquo;<code>heftepix</code>&r
 </code></pre></div>
 
 
-<p>On a un erreur si on cherche à se connecter avec <code>lftp</code>.</p>
+<p>On a une erreur si on cherche à se connecter avec <code>lftp</code>.</p>
 
 
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#FF5C57">❯</font> <font color="#A6E22E">lftp</font> -u <font color="#F4BF75">&apos;heftepix&apos;</font>,<font color="#F4BF75">&apos;BnfMQ9QI81Tz&apos;</font> metronum
@@ -683,6 +683,11 @@ NL$KM:831e11da646a29901b2381dc73416771ffc6dcb9ee0a00bdffe43ea75dee52dff9a9361c6d
 <pre><code>lapsus:hC78*K,Zv+z123
 </code></pre>
 <h2 id="laps">LAPS</h2>
+<hr>
+<p>ℹ️ En théorie, il est possible de détecter avec <em>Bloodhound</em> les comptes qui peuvent lire des mots de passe <strong>LAPS</strong>. Cependant, cela n&rsquo;a pas fonctionné ni avec <a href="https://github.com/BloodHoundAD/BloodHound"><em>Bloodhound</em></a>, ni avec le nouveau <a href="https://github.com/SpecterOps/BloodHound"><em>Bloodhound CE</em></a>.</p>
+<p>Les données ont été collectées à la fois avec <em>netexec</em> avec l&rsquo;option <code>--bloodhound</code>, et avec <a href="https://github.com/dirkjanm/BloodHound.py"><em>bloodhound-python</em></a>.</p>
+<p>Il serait intéressant de voir si d&rsquo;autres <em>collectors</em> permettent de trouver cette info. Il y a une <a href="https://github.com/dirkjanm/BloodHound.py/tree/bloodhound-ce">branche</a> de <em>bloodhound-python</em> qui supporte <em>Bloodhound CE</em>, et de nouveaux <a href="https://support.bloodhoundenterprise.io/hc/en-us/articles/17715215791899-Getting-started-with-BloodHound-Community-Edition"><em>collectors</em></a> pour <em>Bloodhound CE</em>.</p>
+<hr>
 <p>Le nom de l&rsquo;utilisateur, <em><code>lapsus</code></em> nous met sur la voie. Il s&rsquo;agit d&rsquo;aller trouver les identifiants des administrateurs locaux, qui sont gérés par <strong>LAPS</strong>.</p>
 
 
@@ -788,6 +793,9 @@ On utilise le module <code>msol</code> pour récupérer les identifiants du comp
 <h2 id="dcsync---babaorum">DCSync - Babaorum</h2>
 <p>Comme expliqué par <em>mpgn</em> lors du workshop. Quand vous voyez <strong>MSOL</strong>, pensez tout de suite <strong>DCSync</strong>.
 On a vu précédemment que le compte <code>MSOL</code> avait des droits de réplication sur le Domaine.</p>
+<p>On peut voir dans <em>Bloodhound</em> que <code>MSOL_80541c18ebaa</code> a les droits pour un <strong>DCSync</strong>. Ici avec la recherche <em>&ldquo;Find Principals with DCSync Rights&rdquo;</em>.<br>
+Malheureusement cette requête ne fonctionne pas actuellement sur <em>Bloodhound CE</em>, et la recherche <em>&ldquo;Shortest Paths to Domain Admins from Owned Principals&rdquo;</em> ne donne pas non plus de résultats.</p>
+<p><img src="/netexec-workshop/MSOL_DCSync.png" alt="Recherche Bloodhound &ldquo;Find Principals with DCSync Rights&rdquo;"></p>
 <p>On va récupérer le <code>ntds.dit</code> avec un <strong>DCSync</strong>, et donc l&rsquo;ensemble des hashs de mots de passe des utilisateurs du domaine.</p>
 
 
@@ -1110,8 +1118,12 @@ $krb5tgs$23$*alambix$ARMORIQUE.LOCAL$armorique.local/alambix*$d1b74f5ee70b29237e
 <p>On a donc un second compte sur le domaine <code>armorique.local</code>.</p>
 <pre><code>alambix:gaulois-x-toujours
 </code></pre>
+<hr>
+<p>Comme il s&rsquo;agit d&rsquo;une attaque classique en environnement Active Directory, je l&rsquo;ai testé directement. Mais on peut aussi l&rsquo;identifier avec <em><strong>Bloodhound</strong></em>, et la requête <em><strong>&ldquo;List all Kerberoastable Accounts&rdquo;</strong></em>.</p>
+<p><img src="/netexec-workshop/kerberoastable.png" alt="Requête Bloodhound &ldquo;List all Kerberoastable Accounts&rdquo;"></p>
+<p>La requête <em>&ldquo;Shortest Paths from Kerberoastable Users&rdquo;</em> donne également des résultats, mais pas la requête <em>&ldquo;Shortest Paths to Domain Admins from Kerberoastable Users&rdquo;</em> car le <em>DCSync</em> semble mal détecté.</p>
 <h2 id="kerberos">Kerberos</h2>
-<p>Il n&rsquo;est pas possible de se connecter en <em>NetNTLM</em> avec <code>alambix</code>.</p>
+<p>Il n&rsquo;est pas possible de se connecter en <em>NetNTLM</em> avec <code>alambix</code>. Cela est dû au fait que <code>alambix</code> est dans le groupe des <code>protected users</code>.</p>
 
 
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#FF6AC1">❯</font> <font color="#A6E22E">nxc</font> smb village -u <font color="#F4BF75">'alambix'</font> -p <font color="#F4BF75">'gaulois-x-toujours'</font>
@@ -1238,7 +1250,10 @@ Identifiants: tragicomix / TUMDyYSjzu-Jb4
 
 <p>Mais la trahison ne paie pas, et on ne gagne <strong>pas d&rsquo;accès supplémentaires</strong> avec <code>tragicomix</code>.</p>
 <h2 id="gmsa">gMSA</h2>
-<p><code>alambix</code> a les droits pour récupérer le <em>hash NT</em> de <code>gMSA-obelix$</code>. Cela réalisable facilement avec <code>--gmsa</code> sur le protocole <em><code>ldap</code></em>.</p>
+<p>Pour éviter que les comptes de services aient des mots de passe faibles qui ne changent jamais, Microsoft propose les <em>group Managed Service Accounts</em>. Les <em>gMSA</em> ont des mots de passe aléatoire, fort, qui changent tous les 30 jours.</p>
+<p><strong><code>alambix</code></strong> a le <strong>droit de lire</strong> le <strong>mot de passe</strong> du compte de <strong><code>gMSA-obelix$</code></strong>. On peut voir cela avec une requête <em>&ldquo;Shortest Path from Owned Principals&rdquo;</em> dans <em>Bloohound</em>.</p>
+<p><img src="/netexec-workshop/read_gmsa.png" alt="Requête Shortest Path from Owned Principals dans Bloodhound"></p>
+<p><em><strong>Netexec</strong></em> permet de <strong>récupérer</strong> facilement le <strong>mot de passe</strong> avec <strong><code>--gmsa</code></strong> sur le protocole <strong><code>ldap</code></strong>. Comme le mot de passe est aléatoire et avec des caractères non imprimables, on le récupère sous la forme d&rsquo;un <em><strong>hash NT</strong></em>.</p>
 
 
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#FF5C57">❯</font> <font color="#A6E22E">nxc</font> ldap village -k -u <font color="#F4BF75">'alambix'</font> -p <font color="#F4BF75">'gaulois-x-toujours'</font> --gmsa 
@@ -1250,7 +1265,10 @@ Identifiants: tragicomix / TUMDyYSjzu-Jb4
 
 
 <h2 id="dcsync---armoriquelocal--village">DCSync - <code>armorique.local</code> / <code>village</code></h2>
-<p><code>gMSA-obelix$</code> a les droits nécessaires pour faire un <strong>DCSync</strong>. Et on peut récupérer ainsi le <code>ntds.dit</code> de <code>armorique.local</code>.</p>
+<p><code>gMSA-obelix$</code> a les droits nécessaires pour faire un <strong>DCSync</strong> sur <code>armorique.local</code>.</p>
+<p>On peut identifier cela avec <em>Bloodhound</em> et la requête <em>&ldquo;Find Principals with DCSync Rights&rdquo;</em>.</p>
+<p><img src="/netexec-workshop/gMSA_DCSync.png" alt="Bloodhound requête &ldquo;Find Principals with DCSync Rights&rdquo;"></p>
+<p>On peut récupérer ainsi le <strong><code>ntds.dit</code></strong> de <code>armorique.local</code>, avec <em>netexec</em> et le paramètre <strong><code>--ntds</code></strong>. On peut identifier l&rsquo;administrateur de domaine <code>asterix</code> à son ID: <code>500</code>.</p>
 
 
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#FF5C57">❯</font> <font color="#A6E22E">nxc</font> village -u <font color="#F4BF75">'gMSA-obelix$'</font> -H 99bc5b63d68cb72b910bd754af32a236 --ntds
@@ -1297,7 +1315,7 @@ Identifiants: tragicomix / TUMDyYSjzu-Jb4
 
 <h2 id="admin">Admin</h2>
 <p>Nous voilà enfin <strong>administrateur</strong> du <strong>domaine</strong> <strong><code>armorique.local</code></strong>.
-On peut se connecter avec  <code>asterix</code> pour apprécier pleinement de petit <strong><code>Pwn3d!</code></strong>.</p>
+On peut se connecter avec  <code>asterix</code> pour apprécier pleinement le petit <strong><code>Pwn3d!</code></strong>.</p>
 
 
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#FF5C57">❯</font> <font color="#A6E22E">nxc</font> smb village -u <font color="#F4BF75">'asterix'</font> -H 34ff8291f0ee1c444ddfa09dccb6dcc3
@@ -1318,13 +1336,11 @@ On peut se connecter avec  <code>asterix</code> pour apprécier pleinement de pe
 </ol>
 <hr>
 <h2 id="conclusion">Conclusion</h2>
-<p>Déjà, un immense merci à <a href="https://x.com/mpgn_x64">@mpgn</a>, à <a href="https://www.linkedin.com/in/wilfried-b%C3%A9card-7392a9151/">Wilfried</a> et à tous ceux qui ont contribué à cette 3ème édition du workshop.</p>
-<hr>
-<p>🙏 Je n&rsquo;ai pas d&rsquo;<strong>extract BloodHound</strong> pour les machines de workshop. Si une quelqu&rsquo;un peut m&rsquo;en <strong>transmettre un</strong>, j&rsquo;aimerai bien mettre l&rsquo;article à jour et indiquer comment on pouvait détecter certaines failles avec Bloodhound. 🙏<br>
-Je suis joignable via <a href="https://www.linkedin.com/in/olasne/"><strong>Linkedin</strong></a>, <strong>X (Twitter)</strong>, ou par <strong>mail</strong> à <em>olivier@lasne.pro</em>. Merci !</p>
-<hr>
+<p>Déjà, un immense merci à <a href="https://x.com/mpgn_x64">@mpgn</a>, à <a href="https://www.linkedin.com/in/wilfried-b%C3%A9card-7392a9151/">Wil</a> et à tous ceux qui ont contribué à cette 3ème édition du workshop.<br>
+Merci, et félicitations également à <a href="https://www.linkedin.com/in/mael-rolland/">Maël</a> et <a href="https://x.com/rayanlecat">Rayan</a> qui m&rsquo;ont partagé leurs extract <em>Bloodhound</em>.</p>
 <p>Personnellement , le workshop m&rsquo;a permis d&rsquo;exploiter de choses que je n&rsquo;ai pas l&rsquo;occasion de tester au quotidien: <em><strong>DPAPI</strong></em>, <em><strong>LAPS</strong></em>, <em><strong>MSOL</strong></em> ou même <em><strong>gMSA</strong></em>. Je suis très heureux d&rsquo;avoir découvert les <em>MSOL</em> à cette occasion.</p>
 <p>Je ressors au passage convaincu que <code>pipx</code> est la meilleure façon d&rsquo;installer un tas d&rsquo;outils de pentest, notamment <em>netexec</em>.</p>
+<p>Je note également que <em>Bloodhound Community Edition</em> n&rsquo;est aujourd&rsquo;hui pas au niveau de la version &ldquo;classique&rdquo; de <em>Bloodhound</em>.</p>
 <p>Et pour finir <strong>quelques leçons</strong> que je retiens de ce workshop:</p>
 <ul>
 <li>

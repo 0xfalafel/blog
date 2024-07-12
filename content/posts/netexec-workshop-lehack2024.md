@@ -1,19 +1,14 @@
 ---
 title: "Writeup: Workshop Netexec LeHack 2024"
-date: 2024-07-08T16:28:30+02:00
+date: 2024-07-12T15:42:13+02:00
 draft: false
 ---
+
+> Mise à jour du 11 juillet 2024: ajout de ce qui peut être détecté avec __Bloodhound__. Un grand merci à [Maël](https://www.linkedin.com/in/mael-rolland/) et [Rayan](https://x.com/rayanlecat) qui m'ont partagé leurs extract _Bloodhound_.
 
 # Introduction
 
 Cette année encore, [@mpgn](https://x.com/mpgn_x64) nous a régalé un [workshop Active Directory](https://lehack.org/track/active-directory-pwnage-with-netexec/) à __LeHack 2024__.
-
-------------------
-
-🙏 Je n'ai pas d'__extract BloodHound__ pour les machines de workshop. Si une quelqu'un peut m'en __transmettre un__, j'aimerai bien mettre l'article à jour et indiquer comment on pouvait détecter certaines failles avec Bloodhound. 🙏  
-Je suis joignable via [__Linkedin__](https://www.linkedin.com/in/olasne/), __X (Twitter)__, ou par __mail__ à _olivier@lasne.pro_. Merci !
-
-------------------
 
 L'accès était fourni via un fichier de configuration _openvpn_.  
 Le réseau `10.0.0.0/24` était composé de __4 machines__, dans un thème __astérix__ pour cette année.
@@ -319,7 +314,7 @@ Petit indice dans le nom de l'utilisateur : "`heftepix`".
 {{< /rawhtml >}}
 
 
-On a un erreur si on cherche à se connecter avec `lftp`.
+On a une erreur si on cherche à se connecter avec `lftp`.
 
 {{< rawhtml >}}
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#FF5C57">❯</font> <font color="#A6E22E">lftp</font> -u <font color="#F4BF75">&apos;heftepix&apos;</font>,<font color="#F4BF75">&apos;BnfMQ9QI81Tz&apos;</font> metronum
@@ -707,6 +702,16 @@ On trouve ainsi les __identifiants__ de `lapsus`:
 
 ## LAPS
 
+-----
+
+ℹ️ En théorie, il est possible de détecter avec _Bloodhound_ les comptes qui peuvent lire des mots de passe __LAPS__. Cependant, cela n'a pas fonctionné ni avec [_Bloodhound_](https://github.com/BloodHoundAD/BloodHound), ni avec le nouveau [_Bloodhound CE_](https://github.com/SpecterOps/BloodHound).
+
+Les données ont été collectées à la fois avec _netexec_ avec l'option `--bloodhound`, et avec [_bloodhound-python_](https://github.com/dirkjanm/BloodHound.py).
+
+Il serait intéressant de voir si d'autres _collectors_ permettent de trouver cette info. Il y a une [branche](https://github.com/dirkjanm/BloodHound.py/tree/bloodhound-ce) de _bloodhound-python_ qui supporte _Bloodhound CE_, et de nouveaux [_collectors_](https://support.bloodhoundenterprise.io/hc/en-us/articles/17715215791899-Getting-started-with-BloodHound-Community-Edition) pour _Bloodhound CE_.
+
+-----
+
 Le nom de l'utilisateur, *`lapsus`* nous met sur la voie. Il s'agit d'aller trouver les identifiants des administrateurs locaux, qui sont gérés par **LAPS**.
 
 {{< rawhtml >}}
@@ -821,6 +826,11 @@ On obtient les identifiants suivants:
 
 Comme expliqué par _mpgn_ lors du workshop. Quand vous voyez **MSOL**, pensez tout de suite **DCSync**.
 On a vu précédemment que le compte `MSOL` avait des droits de réplication sur le Domaine.
+
+On peut voir dans _Bloodhound_ que `MSOL_80541c18ebaa` a les droits pour un __DCSync__. Ici avec la recherche _"Find Principals with DCSync Rights"_.  
+Malheureusement cette requête ne fonctionne pas actuellement sur _Bloodhound CE_, et la recherche _"Shortest Paths to Domain Admins from Owned Principals"_ ne donne pas non plus de résultats.
+
+![Recherche Bloodhound "Find Principals with DCSync Rights"](/netexec-workshop/MSOL_DCSync.png)
 
 On va récupérer le `ntds.dit` avec un **DCSync**, et donc l'ensemble des hashs de mots de passe des utilisateurs du domaine.
 
@@ -1155,9 +1165,17 @@ On a donc un second compte sur le domaine `armorique.local`.
 
     alambix:gaulois-x-toujours
 
+-----------------------
+
+Comme il s'agit d'une attaque classique en environnement Active Directory, je l'ai testé directement. Mais on peut aussi l'identifier avec ___Bloodhound___, et la requête ___"List all Kerberoastable Accounts"___.
+
+![Requête Bloodhound "List all Kerberoastable Accounts"](/netexec-workshop/kerberoastable.png)
+
+La requête _"Shortest Paths from Kerberoastable Users"_ donne également des résultats, mais pas la requête _"Shortest Paths to Domain Admins from Kerberoastable Users"_ car le _DCSync_ semble mal détecté.
+
 ## Kerberos
 
-Il n'est pas possible de se connecter en _NetNTLM_ avec `alambix`.
+Il n'est pas possible de se connecter en _NetNTLM_ avec `alambix`. Cela est dû au fait que `alambix` est dans le groupe des `protected users`.
 
 {{< rawhtml >}}
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#FF6AC1">❯</font> <font color="#A6E22E">nxc</font> smb village -u <font color="#F4BF75">'alambix'</font> -p <font color="#F4BF75">'gaulois-x-toujours'</font>
@@ -1288,7 +1306,13 @@ Mais la trahison ne paie pas, et on ne gagne __pas d'accès supplémentaires__ a
 
 ## gMSA
 
-`alambix` a les droits pour récupérer le _hash NT_ de `gMSA-obelix$`. Cela réalisable facilement avec `--gmsa` sur le protocole _`ldap`_.
+Pour éviter que les comptes de services aient des mots de passe faibles qui ne changent jamais, Microsoft propose les _group Managed Service Accounts_. Les _gMSA_ ont des mots de passe aléatoire, fort, qui changent tous les 30 jours.
+
+__`alambix`__ a le __droit de lire__ le __mot de passe__ du compte de __`gMSA-obelix$`__. On peut voir cela avec une requête _"Shortest Path from Owned Principals"_ dans _Bloohound_.
+
+![Requête Shortest Path from Owned Principals dans Bloodhound](/netexec-workshop/read_gmsa.png)
+
+___Netexec___ permet de __récupérer__ facilement le __mot de passe__ avec __`--gmsa`__ sur le protocole __`ldap`__. Comme le mot de passe est aléatoire et avec des caractères non imprimables, on le récupère sous la forme d'un ___hash NT___.
 
 {{< rawhtml >}}
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#FF5C57">❯</font> <font color="#A6E22E">nxc</font> ldap village -k -u <font color="#F4BF75">'alambix'</font> -p <font color="#F4BF75">'gaulois-x-toujours'</font> --gmsa 
@@ -1301,7 +1325,13 @@ Mais la trahison ne paie pas, et on ne gagne __pas d'accès supplémentaires__ a
 
 ## DCSync - `armorique.local` / `village`
 
-`gMSA-obelix$` a les droits nécessaires pour faire un __DCSync__. Et on peut récupérer ainsi le `ntds.dit` de `armorique.local`.
+`gMSA-obelix$` a les droits nécessaires pour faire un __DCSync__ sur `armorique.local`. 
+
+On peut identifier cela avec _Bloodhound_ et la requête _"Find Principals with DCSync Rights"_.
+
+![Bloodhound requête "Find Principals with DCSync Rights"](/netexec-workshop/gMSA_DCSync.png)
+
+On peut récupérer ainsi le __`ntds.dit`__ de `armorique.local`, avec _netexec_ et le paramètre __`--ntds`__. On peut identifier l'administrateur de domaine `asterix` à son ID: `500`.
 
 {{< rawhtml >}}
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#FF5C57">❯</font> <font color="#A6E22E">nxc</font> village -u <font color="#F4BF75">'gMSA-obelix$'</font> -H 99bc5b63d68cb72b910bd754af32a236 --ntds
@@ -1349,7 +1379,7 @@ Mais la trahison ne paie pas, et on ne gagne __pas d'accès supplémentaires__ a
 ## Admin
 
 Nous voilà enfin __administrateur__ du __domaine__ __`armorique.local`__.
-On peut se connecter avec  `asterix` pour apprécier pleinement de petit __`Pwn3d!`__.
+On peut se connecter avec  `asterix` pour apprécier pleinement le petit __`Pwn3d!`__.
 
 {{< rawhtml >}}
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"><font color="#FF5C57">❯</font> <font color="#A6E22E">nxc</font> smb village -u <font color="#F4BF75">'asterix'</font> -H 34ff8291f0ee1c444ddfa09dccb6dcc3
@@ -1374,18 +1404,14 @@ Les étapes pour compromettre le second domaine ont été les suivantes.
 
 ## Conclusion
 
-Déjà, un immense merci à [@mpgn](https://x.com/mpgn_x64), à [Wilfried](https://www.linkedin.com/in/wilfried-b%C3%A9card-7392a9151/) et à tous ceux qui ont contribué à cette 3ème édition du workshop.
-
-------------------
-
-🙏 Je n'ai pas d'__extract BloodHound__ pour les machines de workshop. Si une quelqu'un peut m'en __transmettre un__, j'aimerai bien mettre l'article à jour et indiquer comment on pouvait détecter certaines failles avec Bloodhound. 🙏  
-Je suis joignable via [__Linkedin__](https://www.linkedin.com/in/olasne/), __X (Twitter)__, ou par __mail__ à _olivier@lasne.pro_. Merci !
-
-------------------
+Déjà, un immense merci à [@mpgn](https://x.com/mpgn_x64), à [Wil](https://www.linkedin.com/in/wilfried-b%C3%A9card-7392a9151/) et à tous ceux qui ont contribué à cette 3ème édition du workshop.  
+Merci, et félicitations également à [Maël](https://www.linkedin.com/in/mael-rolland/) et [Rayan](https://x.com/rayanlecat) qui m'ont partagé leurs extract _Bloodhound_.
 
 Personnellement , le workshop m'a permis d'exploiter de choses que je n'ai pas l'occasion de tester au quotidien: ___DPAPI___, ___LAPS___, ___MSOL___ ou même ___gMSA___. Je suis très heureux d'avoir découvert les _MSOL_ à cette occasion.
 
 Je ressors au passage convaincu que `pipx` est la meilleure façon d'installer un tas d'outils de pentest, notamment _netexec_.
+
+Je note également que _Bloodhound Community Edition_ n'est aujourd'hui pas au niveau de la version "classique" de _Bloodhound_.
 
 Et pour finir __quelques leçons__ que je retiens de ce workshop:
 
