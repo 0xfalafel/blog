@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Bypass on Olivier LASNE</title>
+    <link>http://localhost:1313/tags/bypass/</link>
+    <description>Recent content in Bypass on Olivier LASNE</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 03 Aug 2024 09:47:56 +0200</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/bypass/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>You don&#39;t need NordVPN (if you have SSH)</title>
+      <link>http://localhost:1313/posts/bypass_country_restrictions_with_ssh/</link>
+      <pubDate>Sat, 03 Aug 2024 09:47:56 +0200</pubDate>
+      <guid>http://localhost:1313/posts/bypass_country_restrictions_with_ssh/</guid>
+      <description>Let&amp;rsquo;s say, hypothetically, you want to see the replay of Teddy Riner kicking ass at the Olympics.&#xA;But you&amp;rsquo;re not in France, so France TV blocks you if your IP is not French.&#xA;Your operator locates you in an area where this video is not available (Denmark).&#xA;At this point, you might think about taking a VPN subscription or find a free shaddy VPN that will inject malware into unencrypted HTTP pages.</description>
+    </item>
+  </channel>
+</rss>

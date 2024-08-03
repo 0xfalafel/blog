@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>You don&#39;t need NordVPN (if you have SSH) &middot; </title>
+        <meta name="description" content="Let&rsquo;s say, hypothetically, you want to see the replay of Teddy Riner kicking ass at the Olympics.
+But you&rsquo;re not in France, so France TV blocks you if your IP is not French.
+Your operator locates you in an area where this video is not available (Denmark).
+At this point, you might think about taking a VPN subscription or find a free shaddy VPN that will inject malware into unencrypted HTTP pages.">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.128.2">
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="http://localhost:1313/dist/site.css">
+        <link rel="stylesheet" href="http://localhost:1313/dist/syntax.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+        
+
+    </head>
+    <body>
+        
+  
+
+
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a href="http://localhost:1313/">Olivier LASNE</a>
+                            </h1>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container">
+        <header class="post-header">
+    <h1 class="post-title">You don&#39;t need NordVPN (if you have SSH)</h1>
+    
+</header>
+
+        <div class="post-content clearfix">
+    
+
+    <p>Let&rsquo;s say, <em>hypothetically</em>, you want to see the replay of Teddy Riner kicking ass at the Olympics.</p>
+<p>But you&rsquo;re not in France, so <strong><em>France TV</em> blocks you</strong> if your <strong>IP is not French</strong>.</p>
+<p><img src="/bypass_country/blocked.png" alt="France TV player indicating that the content is blocked"></p>
+<blockquote>
+<p>Your operator locates you in an area where this video is not available (Denmark).</p>
+</blockquote>
+<p>At this point, you might think about taking a <strong>VPN subscription</strong> or find a free shaddy VPN that will inject malware into unencrypted HTTP pages.</p>
+<h2 id="ssh-port-forwarding-to-the-rescue">SSH port forwarding to the rescue</h2>
+<p>Luckily I was already renting a <strong>Linux server</strong> (<em>well, I forgot to cancel it</em>), <strong>located</strong> in <strong>France</strong>.</p>
+<p><img src="/bypass_country/meme.jpg" alt="Meme heaviest objects in the universe"></p>
+<p>You can use <a href="https://explainshell.com/explain?cmd=ssh+-fND+127.0.0.1%3A3000+username%40server">the following <strong>ssh</strong> command</a> to create a <strong>SOCKS proxy</strong>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ssh -fND 127.0.0.1:3000 username@server
+</span></span></code></pre></div><p>With <code>netstat</code>, we can see that <code>ssh</code> is listening on port <code>3000</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo netstat -ltupn
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Active Internet connections <span style="color:#f92672">(</span>only servers<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>Proto Recv-Q Send-Q Local Address           Foreign Address       
+</span></span><span style="display:flex;"><span>tcp        <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> 127.0.0.1:3000          0.0.0.0:*               LISTEN      27833/ssh
+</span></span><span style="display:flex;"><span>tcp        <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> 127.0.0.53:53           0.0.0.0:*               LISTEN      920/systemd-resolve
+</span></span><span style="display:flex;"><span>udp        <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> 127.0.0.53:53           0.0.0.0:*                           920/systemd-resolve
+</span></span></code></pre></div><p>We can now use the <strong>port <code>3000</code></strong> as a <em><strong>proxy</strong></em>.
+Personally, I use <a href="https://addons.mozilla.org/fr/firefox/addon/switchyomega/">Switchy Omega</a> to easily change between proxies. But you can modify directly the proxy settings of your web browser.</p>
+<p><img src="/bypass_country/switchy_omega.png" alt="Switchy Omega"></p>
+<p>I create a new proxy in <em>Switchy Omega</em> as a <strong>Socks5 proxy</strong> defined as <code>127.0.0.1:3000</code>.</p>
+<p>You can select it in your list of proxies. And <em>voilà</em>, we have access to <em>France TV</em>.</p>
+<p><img src="/bypass_country/bypassed.png" alt="Ippon"></p>
+<h2 id="awesome-what-just-happened">Awesome! What just happened?</h2>
+<p>Well, glad you ask. Let&rsquo;s look at the ssh command. (On a side note, <a href="https://explainshell.com/explain?cmd=ssh+-fND+127.0.0.1%3A3000+username%40server">explainshell</a> is really nice to explore shell commands.)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ssh -fND 127.0.0.1:3000 username@server
+</span></span></code></pre></div><ul>
+<li><code>-f</code> indicates to run <code>ssh</code> in background</li>
+<li><code>-N</code> indicates that we don&rsquo;t want to run any commands (used for port forwarding).</li>
+<li><code>-D</code> is the interesting stuff. Let&rsquo;s look at the <strong>man page</strong>.</li>
+</ul>
+<blockquote>
+<p><code>-D [bind_address:]port</code>: Specifies a local <strong>“dynamic” application-level port forwarding</strong>.  This works by allocating a socket to <strong>listen to port</strong> on the <strong>local side</strong>, optionally bound to the specified bind_address.</p>
+</blockquote>
+<blockquote>
+<p>Whenever a connection is made to this port, the connection is <strong>forwarded over the secure channel</strong>, and the application protocol is then used to determine where to connect to from the remote machine.</p>
+</blockquote>
+<blockquote>
+<p>Currently the <strong>SOCKS4</strong> and <strong>SOCKS5 protocols</strong> are supported, and ssh will act as a SOCKS server.  Only root can forward privileged ports.  Dynamic port forwardings can also be specified in the configuration file.</p>
+</blockquote>
+<p>So <strong><code>-D</code></strong> let us create a <strong>SOCKS5 proxy</strong>, and the packets will be <strong>forwarded over SSH</strong>.</p>
+<h3 id="nice-whats-a-socks5-proxy-exactly">Nice, what&rsquo;s a SOCKS5 proxy exactly?</h3>
+<p>A <strong>proxy</strong> is something that <strong>sits between you and the internet</strong>. It will <em>relay</em> your requests to the different websites.</p>
+<p>For example, a company might deploy a proxy to block adult websites, shady websites, check for malware, log connections, etc.</p>
+<p><img src="/bypass_country/proxy.png" alt="proxy"></p>
+<p>Traditional proxy are only for the HTTP protocol, but soon enough there was a need to offer the same service for other protocols.</p>
+<p><strong>SOCKS</strong> offer the same service at the <strong>TCP level</strong>. There are 2 major versions, <em>SOCKS4</em> and <em>SOCKS5</em>. <em><strong>SOCKS5</strong></em> is more <strong>modern</strong> and supports <em>UDP</em>, <em>IPv6</em>, and authentication.</p>
+<p>SOCKS is a protocol, so the <strong>support</strong> for the <strong>protocol must be implemented</strong>. But luckily for us, it&rsquo;s implemented in <strong>all major browsers</strong>. You can also <em>proxify</em> some apps that don&rsquo;t implement SOCKS with tools like <code>proxychains</code>.</p>
+
+</div>
+
+        <footer class="post-footer clearfix">
+        <p class="post-tags">
+            <span>Tagged:</span>
+                <a href="/tags/ssh/">ssh</a>, 
+                <a href="/tags/bypass/">bypass</a>, 
+                <a href="/tags/censorship/">censorship</a>, 
+                <a href="/tags/vpn/">vpn</a>
+        </p>
+    <div class="share">
+    </div>
+</footer>
+    </article>
+</div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a href="http://localhost:1313/">Olivier LASNE</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
+                        <i class="fa fa-angle-up" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2024 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="http://localhost:1313/js/jquery-1.11.3.min.js"></script>
+        <script src="http://localhost:1313/js/jquery.fitvids.js"></script>
+        <script src="http://localhost:1313/js/scripts.js"></script>
+        
+    </body>
+</html>
+
