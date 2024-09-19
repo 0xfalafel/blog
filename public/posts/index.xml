@@ -18,9 +18,9 @@
     <item>
       <title>Writeup: Workshop Netexec LeHack 2024</title>
       <link>http://localhost:1313/posts/netexec-workshop-lehack2024/</link>
-      <pubDate>Mon, 08 Jul 2024 16:28:30 +0200</pubDate>
+      <pubDate>Fri, 12 Jul 2024 15:42:13 +0200</pubDate>
       <guid>http://localhost:1313/posts/netexec-workshop-lehack2024/</guid>
-      <description>Mise à jour du 11 juillet 2024: ajout de ce qui peut être détecté avec Bloodhound. Un grand merci à Maël et Rayan qui m&amp;rsquo;ont partagé leurs extract Bloodhound.&#xA;Introduction Cette année encore, @mpgn nous a régalé un workshop Active Directory à LeHack 2024.&#xA;L&amp;rsquo;accès était fourni via un fichier de configuration openvpn.&#xA;Le réseau 10.0.0.0/24 était composé de 4 machines, dans un thème astérix pour cette année.&#xA;Mise en place Pour se connecter, on lance openvpn avec le fichier de configuration fourni.</description>
+      <description>Mise à jour du 19 septembre 2024: si vous souhaitez refaire ce lab. Vous pouvez désormais l&amp;rsquo;installer en local avec Vargant: https://github.com/Pennyw0rth/NetExec-Lab/tree/main/LeHack-2024.&#xA;Mise à jour du 11 juillet 2024: ajout de ce qui peut être détecté avec Bloodhound. Un grand merci à Maël et Rayan qui m&amp;rsquo;ont partagé leurs extract Bloodhound.&#xA;Introduction Cette année encore, @mpgn nous a régalé un workshop Active Directory à LeHack 2024.&#xA;L&amp;rsquo;accès était fourni via un fichier de configuration openvpn.</description>
     </item>
     <item>
       <title>Writeup: Trick or Deal</title>

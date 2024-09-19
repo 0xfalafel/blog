@@ -4,6 +4,8 @@ date: 2024-07-12T15:42:13+02:00
 draft: false
 ---
 
+> Mise à jour du 19 septembre 2024: si vous souhaitez refaire ce lab. Vous pouvez désormais l'installer en local avec Vargant: [https://github.com/Pennyw0rth/NetExec-Lab/tree/main/LeHack-2024](https://github.com/Pennyw0rth/NetExec-Lab/tree/main/LeHack-2024).
+
 > Mise à jour du 11 juillet 2024: ajout de ce qui peut être détecté avec __Bloodhound__. Un grand merci à [Maël](https://www.linkedin.com/in/mael-rolland/) et [Rayan](https://x.com/rayanlecat) qui m'ont partagé leurs extract _Bloodhound_.
 
 # Introduction
