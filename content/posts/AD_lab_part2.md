@@ -94,3 +94,27 @@ ad_lab
 └── Vagrantfile
 ```
 
+For now we only have one script, but the idea is to have one file for each configuration we want to apply:
+
+* Installing Active Directory. 
+* Adding some users.
+* Adding a misconfiguration.
+
+The PowerShell script can be referenced by adding the following line to our `Vagrantfile`.
+
+```ruby
+config.vm.provision "shell", path: "scripts/provision.ps1"
+```
+
+When reaching this line. Vagrant will execute the referenced script on the VM.
+
+The script will be run during the `vagrant up` command.  
+But it can also be run by the command
+
+```bash
+vagrant provision
+```
+
+It's quite handy to debug and test your PowerShell scripts.
+
+## 
