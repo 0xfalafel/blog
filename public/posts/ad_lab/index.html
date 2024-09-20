@@ -84,7 +84,7 @@ part 1: Create a Windows Server 2022 VM with vagrant. part 2: Install the Domain
 <p>If you are on Linux, you can probably use the <strong>packages from your distribution</strong>, as we don&rsquo;t rely on any new features. Homebrew should also do the job.</p>
 <p>My setup uses <code>Vagrant 2.4.1</code>, and <code>VirtualBox 7.0.18</code> on a <code>Ubuntu 22.04</code> laptop. But again, we don&rsquo;t rely on any specific feature, so whatever should do.</p>
 <p>You can also use <em>VMware</em> if you want, but in this tutorial we will use <em>VirtualBox</em>.<br>
-We won&rsquo;t use <em>ansible</em> in this tutorial to keep things easy to deploy.</p>
+We won&rsquo;t use <em>ansible</em> to keep things easy to deploy.</p>
 <h2 id="create-a-windows-server">Create a Windows Server</h2>
 <p>This part is surprisingly easy.</p>
 <p>Let&rsquo;s create a <strong>folder <code>ad_lab</code></strong> for our project, and create a <strong><code>Vagrantfile</code></strong> inside it.<br>
@@ -166,6 +166,7 @@ Add this to the <code>Vagrantfile</code>:</p>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
 </span></span></code></pre></div><h2 id="conclusion">Conclusion</h2>
 <p>In this tutorial, we have created a <strong>Virtual Machine</strong> of <strong>Windows 2022 Server</strong> using <code>vagrant</code>.</p>
+<p>You can find the code for this article in this <strong>Github repository</strong>: <a href="https://github.com/0xfalafel/ad_lab">https://github.com/0xfalafel/ad_lab</a>.</p>
 <p>In the <strong><a href="">next part</a></strong>, we will <em>provision</em> the VM. And <strong>install Active Directory</strong> using <strong>Powershell</strong>.</p>
 
 </div>

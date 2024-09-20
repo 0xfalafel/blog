@@ -30,7 +30,7 @@ If you are on Linux, you can probably use the __packages from your distribution_
 My setup uses `Vagrant 2.4.1`, and `VirtualBox 7.0.18` on a `Ubuntu 22.04` laptop. But again, we don't rely on any specific feature, so whatever should do.
 
 You can also use _VMware_ if you want, but in this tutorial we will use _VirtualBox_.  
-We won't use _ansible_ in this tutorial to keep things easy to deploy.  
+We won't use _ansible_ to keep things easy to deploy.  
 
 ## Create a Windows Server
 
@@ -167,5 +167,7 @@ end
 ## Conclusion
 
 In this tutorial, we have created a __Virtual Machine__ of __Windows 2022 Server__ using `vagrant`.
+
+You can find the code for this article in this __Github repository__: [https://github.com/0xfalafel/ad_lab](https://github.com/0xfalafel/ad_lab).
 
 In the __[next part]()__, we will _provision_ the VM. And __install Active Directory__ using __Powershell__.
