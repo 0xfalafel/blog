@@ -1,7 +1,7 @@
 ---
 title: "Active Directory Lab with Vagrant - Part 1"
 date: 2024-09-20T10:09:12+02:00
-draft: true
+draft: false
 ---
 
 > Create a Windows Server 2022 VM with vagrant
