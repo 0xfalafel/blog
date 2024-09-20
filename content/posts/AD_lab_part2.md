@@ -61,9 +61,11 @@ We have multiple possibilites to do this:
 
 ### Why _powershell_ and not _ansible_
 
-I had some bad experiencies with _ansible_, some years ago, were I did write a script to apply some CIS configuration. And ended up loosing a lot of time.
+I had some bad experiencies with _ansible_, some years ago, were I did spend 2 weeks debuging a script to apply a CIS configuration to a 4 Ubuntu servers.  
+After the job was done, I remember thinking that it would have take me a lot less time, if had written a bash script directly.
 
-I thank _ansible_ is really awesome when you have to configure a lot of servers. But for configuring a 1 or 4 servers, I prefer to stick to a simple script.  
+I think _ansible_ is really awesome when you have to configure a lot of servers. And want to share your configuration across multiple servers.  
+But for configuring a 1 or 4 servers, I now prefer to stick to a simple scripts.  
 
 It also makes things a bit easier to deploy in our case.
 
@@ -72,6 +74,23 @@ But since a lot of AD labs are made using ansible, I thought it would be interes
 
 ### Okay, actual provisioning please !
 
-Yep !
+Yes, sir !
 
+Let's __create a `scripts`  folder__. We will add our powershell scripts here.
+
+And create a `provision.ps1`  inside.
+
+```bash
+mkdir scripts
+touch scripts/provision.ps1
+```
+
+Your folder should now look like this:
+
+```
+ad_lab
+├── scripts
+│   └── provision.ps1
+└── Vagrantfile
+```
 

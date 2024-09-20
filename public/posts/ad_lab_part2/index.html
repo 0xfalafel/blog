@@ -116,14 +116,25 @@ Current configuration If you have followed the previous article, your Vagrantfil
 <li>etc</li>
 </ul>
 <h3 id="why-_powershell_-and-not-_ansible_">Why <em>powershell</em> and not <em>ansible</em></h3>
-<p>I had some bad experiencies with <em>ansible</em>, some years ago, were I did write a script to apply some CIS configuration. And ended up loosing a lot of time.</p>
-<p>I thank <em>ansible</em> is really awesome when you have to configure a lot of servers. But for configuring a 1 or 4 servers, I prefer to stick to a simple script.</p>
+<p>I had some bad experiencies with <em>ansible</em>, some years ago, were I did spend 2 weeks debuging a script to apply a CIS configuration to a 4 Ubuntu servers.<br>
+After the job was done, I remember thinking that it would have take me a lot less time, if had written a bash script directly.</p>
+<p>I think <em>ansible</em> is really awesome when you have to configure a lot of servers. And want to share your configuration across multiple servers.<br>
+But for configuring a 1 or 4 servers, I now prefer to stick to a simple scripts.</p>
 <p>It also makes things a bit easier to deploy in our case.</p>
 <p>Use what makes you happy 🙂.<br>
 But since a lot of AD labs are made using ansible, I thought it would be interesting to explain why we didn&rsquo;t go that way.</p>
 <h3 id="okay-actual-provisioning-please-">Okay, actual provisioning please !</h3>
-<p>Yep !</p>
-
+<p>Yes, sir !</p>
+<p>Let&rsquo;s <strong>create a <code>scripts</code>  folder</strong>. We will add our powershell scripts here.</p>
+<p>And create a <code>provision.ps1</code>  inside.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir scripts
+</span></span><span style="display:flex;"><span>touch scripts/provision.ps1
+</span></span></code></pre></div><p>Your folder should now look like this:</p>
+<pre tabindex="0"><code>ad_lab
+├── scripts
+│   └── provision.ps1
+└── Vagrantfile
+</code></pre>
 </div>
 
         <footer class="post-footer clearfix"><div class="share">
