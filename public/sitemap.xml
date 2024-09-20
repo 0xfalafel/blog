@@ -2,16 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/posts/ad_lab/</loc>
+    <lastmod>2024-09-20T10:09:12+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/</loc>
+    <lastmod>2024-09-20T10:09:12+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/</loc>
+    <lastmod>2024-09-20T10:09:12+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/offline_websites/</loc>
+    <lastmod>2024-08-12T22:08:15+02:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/tags/bypass/</loc>
     <lastmod>2024-08-03T09:47:56+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/censorship/</loc>
-    <lastmod>2024-08-03T09:47:56+02:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/</loc>
-    <lastmod>2024-08-03T09:47:56+02:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/</loc>
     <lastmod>2024-08-03T09:47:56+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/ssh/</loc>
@@ -32,7 +38,13 @@
     <loc>http://localhost:1313/posts/trick-or-deal/</loc>
     <lastmod>2023-06-07T12:54:04+02:00</lastmod>
   </url><url>
+    <loc>http://localhost:1313/posts/colored-terminal-in-blog-posts/</loc>
+    <lastmod>2023-05-06T17:45:40+02:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/posts/my-first-post/</loc>
+    <lastmod>2023-05-05T18:50:40+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/using-nix-packages/</loc>
     <lastmod>2023-05-05T18:50:40+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/</loc>

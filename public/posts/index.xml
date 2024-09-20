@@ -6,8 +6,22 @@
     <description>Recent content in Posts on Olivier LASNE</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 03 Aug 2024 09:47:56 +0200</lastBuildDate>
+    <lastBuildDate>Fri, 20 Sep 2024 10:09:12 +0200</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Active Directory Lab with Vagrant</title>
+      <link>http://localhost:1313/posts/ad_lab/</link>
+      <pubDate>Fri, 20 Sep 2024 10:09:12 +0200</pubDate>
+      <guid>http://localhost:1313/posts/ad_lab/</guid>
+      <description>Introduction In this blog post, we are going to see how you can easily create an Active Directory home lab with Vagrant, Virtualbox and Powershell.&#xA;You can also use VMware if you want, but we will use Virtualbox in this tutorial.&#xA;We won&amp;rsquo;t use ansible in this tutorial to keep things easy to deploy.&#xA;Installation First you need to install vagrant and virtualbox.&#xA;If you are on linux, you can probably use the packages from your distribution, as we don&amp;rsquo;t rely on any new features.</description>
+    </item>
+    <item>
+      <title>Survive and thrive offline</title>
+      <link>http://localhost:1313/posts/offline_websites/</link>
+      <pubDate>Mon, 12 Aug 2024 22:08:15 +0200</pubDate>
+      <guid>http://localhost:1313/posts/offline_websites/</guid>
+      <description>Tips and tricks to navigate an offline world&#xA;I travel as much as possible by train 🚂.&#xA;One of the thing that I enjoy the most about traveling by train is that I can use my computer during that time. Instead of looking at the car window for 5 hours straight.&#xA;Insert GIF here&#xA;Despite missing an major [medition](dr K) oportunity. I can code and play CTF during that time.</description>
+    </item>
     <item>
       <title>You don&#39;t need NordVPN (if you have SSH)</title>
       <link>http://localhost:1313/posts/bypass_country_restrictions_with_ssh/</link>
@@ -30,11 +44,25 @@
       <description>Introduction Trick or Deal is a Medium retired hackthebox pwn challenge. It has 97 solves and no writeup at the publication of this blog post.&#xA;This binary has a secret function unlock_storage(), and a Use-After-Free vulnerability.&#xA;To exploit this binary, I will use pwndbg and pwntools.&#xA;Ghidra was also used for the analysis. The snippets of C code were obtained using the Ghidra decompiler.&#xA;Analysis The binary gives us a menu with 5 actions.</description>
     </item>
     <item>
+      <title>Colored Terminal in Blog Posts</title>
+      <link>http://localhost:1313/posts/colored-terminal-in-blog-posts/</link>
+      <pubDate>Sat, 06 May 2023 17:45:40 +0200</pubDate>
+      <guid>http://localhost:1313/posts/colored-terminal-in-blog-posts/</guid>
+      <description></description>
+    </item>
+    <item>
       <title>Hello world</title>
       <link>http://localhost:1313/posts/my-first-post/</link>
       <pubDate>Fri, 05 May 2023 18:50:40 +0200</pubDate>
       <guid>http://localhost:1313/posts/my-first-post/</guid>
       <description>Welcome Welcome to my blog, I promise that there will be more content.&#xA;____________ &amp;lt; Hi Friends &amp;gt; ------------ \ . . \ / `. .&amp;#39; &amp;#34; \ .---. &amp;lt; &amp;gt; &amp;lt; &amp;gt; .---. \ | \ \ - ~ ~ - / / | _____ ..-~ ~-..-~ | | \~~~\.&amp;#39; `./~~~/ --------- \__/ \__/ .&amp;#39; O \ / / \ &amp;#34; (_____, `._.&amp;#39; | } \/~~~/ `----. / } | / \__/ `-.</description>
+    </item>
+    <item>
+      <title>Using Nix packages</title>
+      <link>http://localhost:1313/posts/using-nix-packages/</link>
+      <pubDate>Fri, 05 May 2023 18:50:40 +0200</pubDate>
+      <guid>http://localhost:1313/posts/using-nix-packages/</guid>
+      <description>Nix Enable experimental features Config files&#xA;/etc/nix/nix.conf&#xA;experimental-features = nix-command flakes nix search nixpkgs lldb nix search nixpkgs lldb nix-env -i lldb </description>
     </item>
   </channel>
 </rss>
