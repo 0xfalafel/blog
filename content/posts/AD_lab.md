@@ -1,10 +1,10 @@
 ---
-title: "Create an Active Directory Lab with Vagrant - Part 1"
+title: "Active Directory Lab with Vagrant - Part 1"
 date: 2024-09-20T10:09:12+02:00
 draft: true
 ---
 
-# Create a Windows Server 2022 VM with vagrant
+> Create a Windows Server 2022 VM with vagrant
 
 ## Introduction
 
@@ -14,11 +14,11 @@ We are going to see how you can easily create an __Active Directory__ home __lab
 This is a 3 part series. In __this article__, will use __Vagrant__ to create an __Windows Server 2022__.
 
 * part 1: [Create a Windows Server 2022 VM with vagrant.]()
-* part 2: [Install the Domain Controller.]()
-* part 3: [Add some misconfigurations](), and test them with netexec.
+* part 2: [Install the Domain Controller.](https://t.ly/6sYtv)
+* part 3: [Add some misconfigurations](https://t.ly/6sYtv), and test them with netexec.
 
 
-If you are __already familiar with Vagrant__, you might want to __skip__ directly __to__ the [install the Domain Controler]() section.
+If you are __already familiar with Vagrant__, you might want to __skip__ directly __to__ the [install the Domain Controler](https://t.ly/6sYtv) section.
 
 ## Installation
 
@@ -170,4 +170,4 @@ In this tutorial, we have created a __Virtual Machine__ of __Windows 2022 Server
 
 You can find the code for this article in this __Github repository__: [https://github.com/0xfalafel/ad_lab](https://github.com/0xfalafel/ad_lab).
 
-In the __[next part]()__, we will _provision_ the VM. And __install Active Directory__ using __Powershell__.
+In the __[next part](https://t.ly/6sYtv)__, we will _provision_ the VM. And __install Active Directory__ using __Powershell__.
