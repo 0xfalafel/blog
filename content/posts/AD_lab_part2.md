@@ -117,4 +117,20 @@ vagrant provision
 
 It's quite handy to debug and test your PowerShell scripts.
 
-## 
+Let's write a dummy script.
+
+``` powershell
+Write-Host "Hi mom!"
+``
+
+And test it
+
+
+
+## Install OpenSSH for debugging (optional)
+
+I know, this wasn't part of the title. But I find it makes things a whole lot easier for writing and testing your scripts.
+
+Replace `provision.ps1` with `install_ssh.ps1`.
+
+
