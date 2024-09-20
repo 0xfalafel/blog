@@ -57,7 +57,7 @@ Run the command __`vagrant up`__ inside the folder, and _voilà_ you've created 
 The main idea is to use ___infrastructure as code___ and to use scripts to create reproductible environments.
 
 Stefan Scherer has created a brunch of [Windows VM template](https://app.vagrantup.com/StefanScherer) from the evalution versions of Windows.  
-Things aren't going to run for months, and we can recreate the lab with `vagrant up` so we don't mind using an evaluation version of Windows.
+Since things aren't going to run for months, and we can recreate the lab with `vagrant up` so we don't mind using an evaluation version of Windows.
 
 ### Clean things up
 
@@ -70,7 +70,25 @@ vagrant destroy
 
 ## Customize our VM
 
-Let's customize our VM a bit by giving it a __name__, and an __IP address__.
+Let's customize our VM a bit by giving it a __hostname__, and an __IP address__.
 
+### Hostname
+
+Add the following to you  `Vagrantfile`, after the `config.vm.box` line:
+
+```ruby
+# Configure a hostname for the VM
+config.vm.hostname = "ad01"
+
+# Setup the name in virtualbox
+config.vm.provider "virtualbox" do |v|
+  v.name = "ad01"
+end
+```
+
+`vm.hostname` is pretty explicit. The VM will use `ad01` has her hostname.
+
+
+The `config.vm.provider "virtualbox"` define some instruction that will be used 
 
 
