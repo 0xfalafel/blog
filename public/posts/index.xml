@@ -13,7 +13,7 @@
       <link>http://localhost:1313/posts/ad_lab/</link>
       <pubDate>Fri, 20 Sep 2024 10:09:12 +0200</pubDate>
       <guid>http://localhost:1313/posts/ad_lab/</guid>
-      <description>Introduction In this blog post, we are going to see how you can easily create an Active Directory home lab with Vagrant, Virtualbox and Powershell.&#xA;You can also use VMware if you want, but we will use Virtualbox in this tutorial.&#xA;We won&amp;rsquo;t use ansible in this tutorial to keep things easy to deploy.&#xA;Installation First you need to install vagrant and virtualbox.&#xA;If you are on linux, you can probably use the packages from your distribution, as we don&amp;rsquo;t rely on any new features.</description>
+      <description>Introduction In this blog post, we are going to see how you can easily create an Active Directory home lab with Vagrant, Virtualbox and Powershell.&#xA;If you are already familiar with Vagrant, you might want to skip directly to the install the Domain Controler section.&#xA;You can also use VMware if you want, but this tutorial we will use Virtualbox.&#xA;We won&amp;rsquo;t use ansible in this tutorial to keep things easy to deploy.</description>
     </item>
     <item>
       <title>Survive and thrive offline</title>
