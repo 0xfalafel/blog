@@ -6,14 +6,28 @@
     <description>Recent content in Posts on Olivier LASNE</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 20 Sep 2024 17:47:23 +0200</lastBuildDate>
+    <lastBuildDate>Wed, 25 Sep 2024 16:58:15 +0200</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>AD_lab_part2</title>
+      <title>Windows_usefull_commands</title>
+      <link>http://localhost:1313/posts/windows_usefull_commands/</link>
+      <pubDate>Wed, 25 Sep 2024 16:58:15 +0200</pubDate>
+      <guid>http://localhost:1313/posts/windows_usefull_commands/</guid>
+      <description>Deactivate Windows Firewall Set-NetFirewallProfile -Enabled False Make a user admin net localgroup &amp;#34;Administrators&amp;#34; /add &amp;#34;UserAccountName&amp;#34; Deactivate Windows Defender Get-MpComputerStatus | Select-Object -Property Antivirusenabled,AMServiceEnabled,AntispywareEnabled,BehaviorMonitorEnabled,IoavProtectionEnabled,NISEnabled,OnAccessProtectionEnabled,RealTimeProtectionEnabled,IsTamperProtected,AntivirusSignatureLastUpdatedCopied Disable Defender&#xA;Set-MpPreference -DisableRealtimeMonitoring $true Disable the cloud-delivered protection:&#xA;Set-MpPreference -MAPSReporting Disabled </description>
+    </item>
+    <item>
+      <title>Fix_virtualbox</title>
+      <link>http://localhost:1313/posts/fix_virtualbox/</link>
+      <pubDate>Wed, 25 Sep 2024 11:52:27 +0200</pubDate>
+      <guid>http://localhost:1313/posts/fix_virtualbox/</guid>
+      <description>The bug One infamous bug often encountered on Linux when using Virtualbox is the error :``&#xA;Add a screenshot&#xA;Virtualbox will tell you to run the command&#xA;sudo /sbin/vboxconfig But you will likely be meet with another error.&#xA;Root cause Virtualbox relies on a bunch of kernel modules to handle virtualization:&#xA;❯ lsmod | grep vbox vboxnetadp 28672 0 vboxnetflt 32768 1 vboxdrv 696320 4 vboxnetadp,vboxnetflt When there is a kernel upgrade, for some reason the kernel module aren&amp;rsquo;t created automaticaly.</description>
+    </item>
+    <item>
+      <title>Active Directory Lab with Vagrant - Part 2</title>
       <link>http://localhost:1313/posts/ad_lab_part2/</link>
       <pubDate>Fri, 20 Sep 2024 17:47:23 +0200</pubDate>
       <guid>http://localhost:1313/posts/ad_lab_part2/</guid>
-      <description></description>
+      <description>Install the Domain Controller.&#xA;Introduction This is 2nd article of a 3 part series.&#xA;part 1: Create a Windows Server 2022 VM with vagrant. part 2: Install the Domain Controller. part 3: Add some misconfigurations, and test them with netexec. In the previous article we have created a Windows Server 2022 virtual machine using vagrant.&#xA;Now we are going to install the Domain Controller with powershell.&#xA;Current configuration If you have followed the previous article, your Vagrantfile should look like this:</description>
     </item>
     <item>
       <title>Active Directory Lab with Vagrant - Part 1</title>

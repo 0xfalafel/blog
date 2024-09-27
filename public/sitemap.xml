@@ -2,13 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/posts/ad_lab_part2/</loc>
-    <lastmod>2024-09-20T17:47:23+02:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2024-09-20T17:47:23+02:00</lastmod>
+    <lastmod>2024-09-25T16:58:15+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/</loc>
+    <lastmod>2024-09-25T16:58:15+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/windows_usefull_commands/</loc>
+    <lastmod>2024-09-25T16:58:15+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/fix_virtualbox/</loc>
+    <lastmod>2024-09-25T11:52:27+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/ad_lab_part2/</loc>
     <lastmod>2024-09-20T17:47:23+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/ad_lab_part1/</loc>

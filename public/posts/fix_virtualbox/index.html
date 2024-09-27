@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Fix_virtualbox &middot; </title>
+        <meta name="description" content="The bug One infamous bug often encountered on Linux when using Virtualbox is the error :``
+Add a screenshot
+Virtualbox will tell you to run the command
+sudo /sbin/vboxconfig But you will likely be meet with another error.
+Root cause Virtualbox relies on a bunch of kernel modules to handle virtualization:
+❯ lsmod | grep vbox vboxnetadp 28672 0 vboxnetflt 32768 1 vboxdrv 696320 4 vboxnetadp,vboxnetflt When there is a kernel upgrade, for some reason the kernel module aren&rsquo;t created automaticaly.">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.128.2">
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="http://localhost:1313/dist/site.css">
+        <link rel="stylesheet" href="http://localhost:1313/dist/syntax.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+        
+
+    </head>
+    <body>
+        
+  
+
+
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a href="http://localhost:1313/">Olivier LASNE</a>
+                            </h1>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container">
+        <header class="post-header">
+    <h1 class="post-title">Fix_virtualbox</h1>
+    
+</header>
+
+        <div class="post-content clearfix">
+    
+
+    <h2 id="the-bug">The bug</h2>
+<p>One infamous bug often encountered on Linux when using Virtualbox is the error :``</p>
+<p><em>Add a screenshot</em></p>
+<p>Virtualbox will tell you to run the command</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo /sbin/vboxconfig
+</span></span></code></pre></div><p>But you will likely be meet with another error.</p>
+<h2 id="root-cause">Root cause</h2>
+<p>Virtualbox relies on a bunch of kernel modules to handle virtualization:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>❯ lsmod | grep vbox
+</span></span><span style="display:flex;"><span>vboxnetadp             <span style="color:#ae81ff">28672</span>  <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>vboxnetflt             <span style="color:#ae81ff">32768</span>  <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>vboxdrv               <span style="color:#ae81ff">696320</span>  <span style="color:#ae81ff">4</span> vboxnetadp,vboxnetflt
+</span></span></code></pre></div><p>When there is a kernel upgrade, for some reason the kernel module aren&rsquo;t created automaticaly.
+And so Virtualbox can&rsquo;t run without them, hence the error.</p>
+<h2 id="fix">Fix</h2>
+<p>You can reinstall the required kernel modules with the following command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt reinstall linux-headers-generic linux-headers-<span style="color:#66d9ef">$(</span>uname -r<span style="color:#66d9ef">)</span>
+</span></span></code></pre></div><p>And once this is done, you just have to reload the virtualbox modules with</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo /sbin/vboxconfig
+</span></span></code></pre></div><p>And everything should be working again.</p>
+<h2 id="things-i-am-not-so-sure-about">Things I am not so sure about</h2>
+<p>Nowadays, I use the newest version of VirtualBox directly from <a href="https://www.virtualbox.org/wiki/Linux_Downloads#Debian-basedLinuxdistributions">VirtualBox repositories</a>.</p>
+<p>But when I was using it from the distribution repositories. I was also reinstalling the <code>dkms</code> package.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt install --reinstall linux-headers-<span style="color:#66d9ef">$(</span>uname -r<span style="color:#66d9ef">)</span> virtualbox-dkms dkms
+</span></span></code></pre></div><p>Not sure if this is required.</p>
+
+</div>
+
+        <footer class="post-footer clearfix"><div class="share">
+    </div>
+</footer>
+    </article>
+</div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a href="http://localhost:1313/">Olivier LASNE</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
+                        <i class="fa fa-angle-up" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2024 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="http://localhost:1313/js/jquery-1.11.3.min.js"></script>
+        <script src="http://localhost:1313/js/jquery.fitvids.js"></script>
+        <script src="http://localhost:1313/js/scripts.js"></script>
+        
+    </body>
+</html>
+
