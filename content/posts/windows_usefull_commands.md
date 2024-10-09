@@ -32,3 +32,28 @@ Disable the cloud-delivered protection:
 ```bash
 Set-MpPreference -MAPSReporting Disabled
 ```
+
+## OpenSSH
+
+Install OpenSSH
+
+```bash
+Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH*'
+```
+
+```bash
+Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+```
+
+Start SSH
+
+```bash
+Start-Service -Name sshd
+```
+
+Set Startup Type automatic
+
+```bash
+Set-Service sshd -StartupType Automatic
+```
+
