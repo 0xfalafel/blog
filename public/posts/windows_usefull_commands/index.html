@@ -6,7 +6,11 @@
         <title>Windows_usefull_commands &middot; </title>
         <meta name="description" content="Deactivate Windows Firewall Set-NetFirewallProfile -Enabled False Make a user admin net localgroup &#34;Administrators&#34; /add &#34;UserAccountName&#34; Deactivate Windows Defender Get-MpComputerStatus | Select-Object -Property Antivirusenabled,AMServiceEnabled,AntispywareEnabled,BehaviorMonitorEnabled,IoavProtectionEnabled,NISEnabled,OnAccessProtectionEnabled,RealTimeProtectionEnabled,IsTamperProtected,AntivirusSignatureLastUpdatedCopied Disable Defender
 Set-MpPreference -DisableRealtimeMonitoring $true Disable the cloud-delivered protection:
-Set-MpPreference -MAPSReporting Disabled ">
+Set-MpPreference -MAPSReporting Disabled OpenSSH Install OpenSSH
+Get-WindowsCapability -Online | Where-Object Name -like &#39;OpenSSH*&#39; Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0 Start SSH
+Start-Service -Name sshd Set Startup Type automatic
+Set-Service sshd -StartupType Automatic Make Powershell the default shell
+New-ItemProperty -Path &#34;HKLM:\SOFTWARE\OpenSSH&#34; -Name DefaultShell -Value &#34;C:\Windows\System32\WindowsPowerShell\v1.">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
         <meta name="generator" content="Hugo 0.128.2">
@@ -79,6 +83,16 @@ Set-MpPreference -MAPSReporting Disabled ">
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Set-MpPreference -DisableRealtimeMonitoring $true
 </span></span></code></pre></div><p>Disable the cloud-delivered protection:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Set-MpPreference -MAPSReporting Disabled
+</span></span></code></pre></div><h2 id="openssh">OpenSSH</h2>
+<p>Install OpenSSH</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Get-WindowsCapability -Online | Where-Object Name -like <span style="color:#e6db74">&#39;OpenSSH*&#39;</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+</span></span></code></pre></div><p>Start SSH</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Start-Service -Name sshd
+</span></span></code></pre></div><p>Set Startup Type automatic</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Set-Service sshd -StartupType Automatic
+</span></span></code></pre></div><p>Make Powershell the default shell</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>New-ItemProperty -Path <span style="color:#e6db74">&#34;HKLM:\SOFTWARE\OpenSSH&#34;</span> -Name DefaultShell -Value <span style="color:#e6db74">&#34;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&#34;</span> -PropertyType String -Force
 </span></span></code></pre></div>
 </div>
 
