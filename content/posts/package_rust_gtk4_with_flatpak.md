@@ -75,7 +75,7 @@ use gtk::{glib, prelude::*};
 
 fn main() -> glib::ExitCode {
     let application = gtk::Application::builder()
-        .application_id("pro.lasne.demo")
+        .application_id("pro.lasne.demo-app")
         .build();
     application.connect_activate(build_ui);
     application.run()
@@ -107,7 +107,21 @@ And then we create a _button_, and associate a _event_ when the button is clicke
 
 ### Run the code
 
-If everything is correctly setup, you should be able to run your app with.
+We can __build the app__ with
+
+```bash
+cargo build
+```
+
+or
+
+```bash
+cargo build --release
+```
+
+This will create the binary `./target/release/demo-app`.
+
+If everything is correctly setup, you should be able to __run your app__ with.
 
 ```bash
 cargo run
@@ -121,7 +135,7 @@ Now that our app is running, we need to __choose a runtime to target__. (But wha
 
 ## A quick Introduction to Flatpak 🧑‍🏫
 
-[Flatpak](https://flatpak.org/) is a way to __package Linux apps__, and distribute them for all distributions at once via [flathub](https://flathub.org/). This is achieved by compartimenting each application.
+[Flatpak](https://flatpak.org/) is a way to __package Linux apps__, and distribute them for all distributions at once via [flathub](https://flathub.org/). This is achieved by isolating each application, and provide them an environment to run in.
 
 ### Runtimes 📚️
 
@@ -155,7 +169,7 @@ flatpak install --user org.gnome.Sdk//47 org.gnome.Platform//47
 ```
 
 To build a __Rust program__, we also need to install the [__Rust SDK__ extension](https://github.com/flathub/org.freedesktop.Sdk.Extension.rust-stable).  
-_Gnome 47_ platform is build on top of the _freedesktop 24.08_ platform, so we are going to install this version of the extension.
+_Gnome 47_ platform is __build on top__ of the _freedesktop 24.08_ platform, so we are going to install this version of the extension.
 
 ```bash
 flatpak install --user org.freedesktop.Sdk.Extension.rust-stable//24.08 org.freedesktop.Sdk.Extension.llvm18//24.08
@@ -163,10 +177,123 @@ flatpak install --user org.freedesktop.Sdk.Extension.rust-stable//24.08 org.free
 
 ## Flatpak our App 📦️
 
-Every flatpak starts with a __Manifest__.
+Every flatpak is defined by a __Manifest__.
 
-This file define:
+A ___manifest_ defines__:
+* the __runtime__ used
+* instructions for __building__ the app
+* __where__ the __files__ are __installed__.
 
-* the runtimes
-* the files
+A manifest can be either in _json_ or in _yaml_.
 
+Since our __app ID__ is `pro.lasne.demo-app`, let's __create__ a `pro.lasne.demo-app.yml` __manifest__ at the root of our project.
+
+``` YAML
+app-id: pro.lasne.demo-app
+runtime: org.gnome.Platform
+runtime-version: '47'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: demo-app
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin
+modules:
+  - name: demo-app
+    buildsystem: simple
+    build-options:
+      env:
+        CARGO_HOME: /run/build/demo-app/cargo
+    build-commands:
+      - cargo --offline fetch --manifest-path Cargo.toml --verbose
+      - cargo --offline build --release --verbose
+      - install -Dm755 ./target/release/demo-app -t /app/bin/
+    sources:
+      - type: dir
+        path: .
+      - cargo-sources.json
+```
+
+Let's explore a bit what we have here.
+
+#### Common Flatpak informations:
+
+* `app-id`: the __ID__ of our app, with a reverse-DNS scheme.
+* `command`: the __command executed__ to run our app.
+
+#### Gnome Runtime:
+
+* the __`runtime`__ and `sdk`: here we target ___Gnome 47___.
+* We also need to define some `finish-args` to let our app __access__ the __graphical__ server _X_ or _Wayland_.
+
+#### Rust:
+
+* `sdk-extensions`: __adds__ the __Rust SDK__ to our runtime.
+* `build-commands`: some commands to __build__ our app __with `cargo`__.
+* `install`: is used to copy `demo-app` to `/app/bin/`.
+
+### Integrate Cargo with Flatpak Builder 🪄
+
+We have __one last thing__ to do before building our app.  
+You might have notice is the `cargo-sources.json` in the manifest.
+
+To build the app with `cargo` in a flatpak. We need to generate this file using the script [`flatpak-cargo-generator.py`](https://github.com/flatpak/flatpak-builder-tools/blob/master/cargo/flatpak-cargo-generator.py) from the [flatpak-builder-tools](https://github.com/flatpak/flatpak-builder-tools) repository.
+
+```bash
+python3 flatpak-cargo-generator.py Cargo.lock -o cargo-sources.json
+```
+
+## Build and Install 🛠️
+
+We can finally build our flatpak.
+
+Your source directory should look like this:
+
+```shell
+demo-app
+├── Cargo.toml
+├── Cargo.lock
+├── cargo-sources.json
+├── pro.lasne.demo-app.yml
+├── src
+│   └── main.rs
+└── target
+```
+
+You can __build the app__ with:
+
+```bash
+flatpak-builder --user flatpak_app pro.lasne.demo-app.yml --force-clean
+```
+
+If everything works without errors. You can install the app on you system.
+
+```bash
+flatpak-builder --user flatpak_app pro.lasne.demo-app.yml --force-clean --install
+```
+
+Your app should now be listed with the installed flatpak:
+
+```bash
+$ flatpak list
+
+demo-app        pro.lasne.demo-app              master  demo-app-origin user
+```
+
+You can run it with 
+```bash
+flatpak run pro.lasne.demo-app
+```
+
+![Running the app in a flatpak](/gtk4-flatpak/flatpak_run.png)
+
+
+# Conclusion
+
+In this article we have seen how to package with Flatpak a Gtk 4 app written in Rust.  
+In the [next article](), we'll see how to integrate with _elementary OS_.
