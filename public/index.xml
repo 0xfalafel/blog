@@ -6,8 +6,15 @@
     <description>Recent content on Olivier LASNE</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 25 Sep 2024 16:58:15 +0200</lastBuildDate>
+    <lastBuildDate>Sat, 21 Dec 2024 14:49:47 +0100</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Package Rust Gtk4 apps with flatpak</title>
+      <link>http://localhost:1313/posts/package_rust_gtk4_with_flatpak/</link>
+      <pubDate>Sat, 21 Dec 2024 14:49:47 +0100</pubDate>
+      <guid>http://localhost:1313/posts/package_rust_gtk4_with_flatpak/</guid>
+      <description>I have played around with Gtk 4 and Rust to write Desktop applications.&#xA;But I did struggle a lot to package them with Flatpak.&#xA;In this article we will see how to package a simple Gtk 4 app with Flatpak for Gnome and Elementary OS. Will will also do an example for Relm4 which make writing Gtk 4 for Rust a lot more pleasant.&#xA;Also, please note that we don&amp;rsquo;t need Meson, so we won&amp;rsquo;t use it.</description>
+    </item>
     <item>
       <title>Windows_usefull_commands</title>
       <link>http://localhost:1313/posts/windows_usefull_commands/</link>

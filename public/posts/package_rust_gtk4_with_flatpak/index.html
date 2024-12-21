@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Package Rust Gtk4 apps with flatpak &middot; </title>
+        <meta name="description" content="I have played around with Gtk 4 and Rust to write Desktop applications.
+But I did struggle a lot to package them with Flatpak.
+In this article we will see how to package a simple Gtk 4 app with Flatpak for Gnome and Elementary OS. Will will also do an example for Relm4 which make writing Gtk 4 for Rust a lot more pleasant.
+Also, please note that we don&rsquo;t need Meson, so we won&rsquo;t use it.">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.128.2">
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="http://localhost:1313/dist/site.css">
+        <link rel="stylesheet" href="http://localhost:1313/dist/syntax.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+        
+
+    </head>
+    <body>
+        
+  
+
+
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a href="http://localhost:1313/">Olivier LASNE</a>
+                            </h1>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container">
+        <header class="post-header">
+    <h1 class="post-title">Package Rust Gtk4 apps with flatpak</h1>
+    
+</header>
+
+        <div class="post-content clearfix">
+    
+
+    <p>I have played around with <strong>Gtk 4</strong> and <strong>Rust</strong> to write Desktop applications.<br>
+But I did struggle a lot to package them with <strong>Flatpak</strong>.</p>
+<p>In this article we will see <strong>how to package</strong> a simple <strong>Gtk 4</strong> app with <strong>Flatpak</strong> for <strong>Gnome</strong> and <strong>Elementary OS</strong>.
+Will will also do an example for <strong><a href="https://relm4.org/">Relm4</a></strong> which make writing Gtk 4 for Rust a lot more pleasant.</p>
+<p>Also, please note that we <strong>don&rsquo;t need Meson</strong>, so we won&rsquo;t use it. But you will have to use something else for translations.</p>
+<h2 id="lets-create-a-simple-app-">Let&rsquo;s create a simple App 🚀</h2>
+<p>First, let&rsquo;s make a <strong>minimal Gtk4 app</strong>.</p>
+<h3 id="install-the-dependencies">Install the dependencies</h3>
+<p>If you don&rsquo;t have rust. <a href="https://www.rust-lang.org/tools/install">Install it</a> with</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl --proto <span style="color:#e6db74">&#39;=https&#39;</span> --tlsv1.2 -sSf https://sh.rustup.rs | sh
+</span></span></code></pre></div><p>We also need the <a href="https://gtk-rs.org/gtk4-rs/stable/latest/book/installation_linux.html">Gtk 4 libraries</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo apt install libgtk-4-dev build-essential
+</span></span></code></pre></div><h3 id="create-the-project">Create the project:</h3>
+<p>As with most Rust projets. Let&rsquo;s use <code>cargo</code> to compile and handle the dependencies.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cargo new demo-app
+</span></span></code></pre></div><h3 id="add-gtk-4-to-our-projet">Add Gtk 4 to our projet</h3>
+<p>Find <a href="https://gtk-rs.org/gtk4-rs/stable/latest/book/project_setup.html">what version of Gtk 4</a> is installed on your system:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ pkg-config --modversion gtk4
+</span></span><span style="display:flex;"><span>4.6.9
+</span></span></code></pre></div><p>Here I have the <strong>version 4.6</strong>. Let&rsquo;s install add it to <code>Cargo.toml</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd demo-app
+</span></span><span style="display:flex;"><span>cargo add gtk4 --rename gtk --features v4_6
+</span></span></code></pre></div><p>Your <code>Cargo.toml</code> should now look something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Toml" data-lang="Toml"><span style="display:flex;"><span>[<span style="color:#a6e22e">package</span>]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">name</span> = <span style="color:#e6db74">&#34;demo-app&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">version</span> = <span style="color:#e6db74">&#34;0.1.0&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">edition</span> = <span style="color:#e6db74">&#34;2021&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>[<span style="color:#a6e22e">dependencies</span>]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">gtk</span> = { <span style="color:#a6e22e">version</span> = <span style="color:#e6db74">&#34;0.9.5&#34;</span>, <span style="color:#a6e22e">package</span> = <span style="color:#e6db74">&#34;gtk4&#34;</span>, <span style="color:#a6e22e">features</span> = [<span style="color:#e6db74">&#34;v4_6&#34;</span>] }
+</span></span></code></pre></div><h2 id="code-our-app">Code our app</h2>
+<p>Edit <code>src/main.rs</code> to create our app.</p>
+<p><strong>main.rs:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> gtk::{glib, prelude::<span style="color:#f92672">*</span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; <span style="color:#a6e22e">glib</span>::ExitCode {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> application <span style="color:#f92672">=</span> gtk::Application::builder()
+</span></span><span style="display:flex;"><span>        .application_id(<span style="color:#e6db74">&#34;pro.lasne.demo&#34;</span>)
+</span></span><span style="display:flex;"><span>        .build();
+</span></span><span style="display:flex;"><span>    application.connect_activate(build_ui);
+</span></span><span style="display:flex;"><span>    application.run()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">build_ui</span>(application: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">gtk</span>::Application) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> window <span style="color:#f92672">=</span> gtk::ApplicationWindow::new(application);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    window.set_title(Some(<span style="color:#e6db74">&#34;Hello world&#34;</span>));
+</span></span><span style="display:flex;"><span>    window.set_default_size(<span style="color:#ae81ff">200</span>, <span style="color:#ae81ff">70</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> button <span style="color:#f92672">=</span> gtk::Button::with_label(<span style="color:#e6db74">&#34;Click me!&#34;</span>);
+</span></span><span style="display:flex;"><span>    button.connect_clicked(<span style="color:#f92672">|</span>_<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        println!(<span style="color:#e6db74">&#34;You clicked me !&#34;</span>);
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    window.set_child(Some(<span style="color:#f92672">&amp;</span>button));
+</span></span><span style="display:flex;"><span>    window.present();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This code is taken from <a href="https://github.com/gtk-rs/gtk4-rs/blob/main/examples/basics/main.rs">this example</a> on Github.
+You can also look at the <a href="https://gtk-rs.org/gtk4-rs/stable/latest/book/hello_world.html">Gtk4-rs book</a>.</p>
+<p>We have some boilerplate to create a Gtk 4 app. Flatpak use a <em>reverse DNS</em> naming scheme for apps. You can also use something like <code>io.github.username.repo</code> for your app.</p>
+<p>We define a <em>window size</em> (200x70), a <em>title</em>.
+And then we create a <em>button</em>, and associate a <em>event</em> when the button is clicked.</p>
+<h3 id="run-the-code">Run the code</h3>
+<p>If everything is correctly setup, you should be able to run your app with.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cargo run
+</span></span></code></pre></div><p>from the <code>demo-app</code> folder. The following window should appear.</p>
+<p><img src="/gtk4-flatpak/demo-app.png" alt="Demo App running"></p>
+<p>Now that our app is running, we need to <strong>choose a runtime to target</strong>. (But what is a runtime you might ask 🤔?)</p>
+<h2 id="a-quick-introduction-to-flatpak-">A quick Introduction to Flatpak 🧑‍🏫</h2>
+<p><a href="https://flatpak.org/">Flatpak</a> is a way to <strong>package Linux apps</strong>, and distribute them for all distributions at once via <a href="https://flathub.org/">flathub</a>. This is achieved by compartimenting each application.</p>
+<h3 id="runtimes-">Runtimes 📚️</h3>
+<p>To run, Flatpak apps use a <a href="https://docs.flatpak.org/en/latest/available-runtimes.html"><strong>runtime</strong></a> that provide a <em>base image</em> of the system with shared libraries.</p>
+<p><img src="/gtk4-flatpak/runtimes.svg" alt="Flatpak Runtimes"></p>
+<p>Runtimes are associated with a version of <em>Gnome</em>, <em>KDE</em> or <em>Elementary</em>. All runtimes are <strong>based on</strong> the <strong>FreeDesktop runtime</strong>.</p>
+<p>You can list the installed runtimes with:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>flatpak list --runtime
+</span></span></code></pre></div><p>FreeDesktop runtimes a released a bit like Ubuntu versions with a <em>year.month</em> scheme:</p>
+<ul>
+<li>23.08</li>
+<li>24.08</li>
+</ul>
+<p>The are 2 components you might want to install:</p>
+<ul>
+<li>the platform</li>
+<li>the SDK.</li>
+</ul>
+<p>For example, to target <strong>Gnome 47</strong>, we will <strong>install</strong> the <strong>Gnome Platform</strong>, and the <strong>Gnome SDK</strong>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>flatpak install --user org.gnome.Sdk//47 org.gnome.Platform//47
+</span></span></code></pre></div><p>To build a <strong>Rust program</strong>, we also need to install the <a href="https://github.com/flathub/org.freedesktop.Sdk.Extension.rust-stable"><strong>Rust SDK</strong> extension</a>.<br>
+<em>Gnome 47</em> platform is build on top of the <em>freedesktop 24.08</em> platform, so we are going to install this version of the extension.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>flatpak install --user org.freedesktop.Sdk.Extension.rust-stable//24.08 org.freedesktop.Sdk.Extension.llvm18//24.08
+</span></span></code></pre></div><h2 id="flatpak-our-app-">Flatpak our App 📦️</h2>
+<p>Every flatpak starts with a <strong>Manifest</strong>.</p>
+<p>This file define:</p>
+<ul>
+<li>the runtimes</li>
+<li>the files</li>
+</ul>
+
+</div>
+
+        <footer class="post-footer clearfix"><div class="share">
+    </div>
+</footer>
+    </article>
+</div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a href="http://localhost:1313/">Olivier LASNE</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
+                        <i class="fa fa-angle-up" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2024 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="http://localhost:1313/js/jquery-1.11.3.min.js"></script>
+        <script src="http://localhost:1313/js/jquery.fitvids.js"></script>
+        <script src="http://localhost:1313/js/scripts.js"></script>
+        
+    </body>
+</html>
+
