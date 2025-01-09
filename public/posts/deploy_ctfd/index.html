@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=43385&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Deploy a CTFd server &middot; </title>
+        <meta name="description" content="In this blog post, we are going to explore how to deploy a CTFd server with:
+
+HTTPS
+mail
+
+Renting the server
+You can I use any Linux server you want.
+In my case, I am going to use Digital Ocean, with an Ubuntu 24.10 droplet.
+https://www.digitalocean.com/
+
+This is an affiliate link, I make a bit of money if create a new account.
+Feel free to use your prefered hosting. It makes no difference whatsoever.">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.140.2">
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="http://localhost:43385/dist/site.css">
+        <link rel="stylesheet" href="http://localhost:43385/dist/syntax.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+        
+
+    </head>
+    <body>
+        
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a href="http://localhost:43385/">Olivier LASNE</a>
+                            </h1>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container">
+        <header class="post-header">
+    <h1 class="post-title">Deploy a CTFd server</h1>
+    
+</header>
+
+        <div class="post-content clearfix">
+    
+
+    <p>In this blog post, we are going to explore how to deploy a CTFd server with:</p>
+<ul>
+<li>HTTPS</li>
+<li>mail</li>
+</ul>
+<h2 id="renting-the-server">Renting the server</h2>
+<p>You can I use any Linux server you want.
+In my case, I am going to use Digital Ocean, with an Ubuntu 24.10 droplet.</p>
+<p><a href="https://www.digitalocean.com/">https://www.digitalocean.com/</a></p>
+<blockquote>
+<p>This is an <strong>affiliate link</strong>, I make a bit of money if create a new account.<br>
+Feel free to <strong>use your prefered hosting</strong>. It makes no difference whatsoever.</p>
+</blockquote>
+<h2 id="install-docker">Install Docker</h2>
+<p>We are going to install CTFd with the Docker installation, as it makes things a bit easier.<br>
+First, let&rsquo;s <a href="https://docs.docker.com/engine/install/ubuntu/"><strong>install docker</strong></a> on our <strong>Ubuntu</strong> server.</p>
+<p>Add the docker repository:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Add Docker&#39;s official GPG key:</span>
+</span></span><span style="display:flex;"><span>sudo apt-get update
+</span></span><span style="display:flex;"><span>sudo apt-get install ca-certificates curl
+</span></span><span style="display:flex;"><span>sudo install -m <span style="color:#ae81ff">0755</span> -d /etc/apt/keyrings
+</span></span><span style="display:flex;"><span>sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+</span></span><span style="display:flex;"><span>sudo chmod a+r /etc/apt/keyrings/docker.asc
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Add the repository to Apt sources:</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  <span style="color:#e6db74">&#34;deb [arch=</span><span style="color:#66d9ef">$(</span>dpkg --print-architecture<span style="color:#66d9ef">)</span><span style="color:#e6db74"> signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  </span><span style="color:#66d9ef">$(</span>. /etc/os-release <span style="color:#f92672">&amp;&amp;</span> echo <span style="color:#e6db74">&#34;</span>$VERSION_CODENAME<span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74"> stable&#34;</span> | <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
+</span></span><span style="display:flex;"><span>sudo apt-get update
+</span></span></code></pre></div><p>And then install <code>docker</code>, and <code>docker-compose</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+</span></span></code></pre></div><h2 id="install-ctfd">Install CTFd</h2>
+<p>Now, let&rsquo;s install <em>CTFd</em>. First <strong>clone</strong> the <strong>repository</strong>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone --depth <span style="color:#ae81ff">1</span> https://github.com/CTFd/CTFd.git
+</span></span></code></pre></div><p>Then, you can go in the folder, and <strong>start CTFd</strong> with <strong><code>docker compose</code></strong>:</p>
+
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">root@ubuntu-s-1vcpu-2gb-fra1-01:~# cd CTFd/
+root@ubuntu-s-1vcpu-2gb-fra1-01:~/CTFd# docker compose up -d
+<font color="#66D9EF">[+] Running 4/4</font>
+ <font color="#A6E22E">✔</font> Container ctfd-db-1     <font color="#A6E22E">Started</font>                      <font color="#66D9EF">0.7s </font>
+ <font color="#A6E22E">✔</font> Container ctfd-ctfd-1   <font color="#A6E22E">Started</font>                      <font color="#66D9EF">1.4s </font>
+ <font color="#A6E22E">✔</font> Container ctfd-nginx-1  <font color="#A6E22E">Started</font>                      <font color="#66D9EF">2.4s </font>
+ <font color="#A6E22E">✔</font> Container ctfd-cache-1  <font color="#A6E22E">Started</font>                      <font color="#66D9EF">0.7s </font>
+</code></pre></div>
+
+
+<p>You should see the <strong>port 80</strong> and <strong>8000 listening</strong> on the server.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>root@ubuntu-s-1vcpu-2gb-fra1-01:~# ss -ltupn | grep docker
+</span></span><span style="display:flex;"><span>tcp   LISTEN <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">4096</span>         0.0.0.0:80        0.0.0.0:*    users:<span style="color:#f92672">((</span><span style="color:#e6db74">&#34;docker-proxy&#34;</span>,pid<span style="color:#f92672">=</span>9941,fd<span style="color:#f92672">=</span>4<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>tcp   LISTEN <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">4096</span>         0.0.0.0:8000      0.0.0.0:*    users:<span style="color:#f92672">((</span><span style="color:#e6db74">&#34;docker-proxy&#34;</span>,pid<span style="color:#f92672">=</span>9831,fd<span style="color:#f92672">=</span>4<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>tcp   LISTEN <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">4096</span>            <span style="color:#f92672">[</span>::<span style="color:#f92672">]</span>:80           <span style="color:#f92672">[</span>::<span style="color:#f92672">]</span>:*    users:<span style="color:#f92672">((</span><span style="color:#e6db74">&#34;docker-proxy&#34;</span>,pid<span style="color:#f92672">=</span>9947,fd<span style="color:#f92672">=</span>4<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>tcp   LISTEN <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">4096</span>            <span style="color:#f92672">[</span>::<span style="color:#f92672">]</span>:8000         <span style="color:#f92672">[</span>::<span style="color:#f92672">]</span>:*    users:<span style="color:#f92672">((</span><span style="color:#e6db74">&#34;docker-proxy&#34;</span>,pid<span style="color:#f92672">=</span>9839,fd<span style="color:#f92672">=</span>4<span style="color:#f92672">))</span>
+</span></span></code></pre></div><p><strong>Access</strong> the <strong>setup pane</strong> at <code>http://yourip</code>, and fill the informations about your CTF.</p>
+<p><img src="/deploy_ctfd/ctfd_setup.png" alt=""></p>
+<h3 id="note-about-data-persistance">Note about data persistance</h3>
+<p>In the <code>docker-compose.yml</code>, you will find the following <code>volumes</code> sections:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">.data/CTFd/logs:/var/log/CTFd</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">.data/CTFd/uploads:/var/uploads</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">.:/opt/CTFd:ro</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">./conf/nginx/http.conf:/etc/nginx/nginx.conf</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">.data/mysql:/var/lib/mysql</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#ae81ff">.data/redis:/data</span>
+</span></span></code></pre></div><p>All the <strong>data</strong> you configure in the app will be <strong>stored in</strong> the <strong><code>.data</code></strong> folder.
+If you stop and restart the containers, the <strong>data will be keeped</strong>.</p>
+<p>You can stop the containers with:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker compose stop
+</span></span></code></pre></div><h1 id="https-configuration">HTTPS Configuration</h1>
+<p>Now let&rsquo;s explore the hard question, the HTTPS configuration.
+We will add a certificate from <em>Let&rsquo;s encrypt</em>.</p>
+<h4 id="stop-running-containers">Stop running containers</h4>
+<p>First, let&rsquo;s stop all the running containers since we need the port 80.</p>
+
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">root@ubuntu-s-1vcpu-2gb-fra1-01:~/CTFd# docker compose stop
+<font color="#66D9EF">[+] Stopping 4/4</font>
+ <font color="#A6E22E">✔</font> Container ctfd-nginx-1  <font color="#A6E22E">Stopped</font>                                 <font color="#66D9EF">0.3s </font>
+ <font color="#A6E22E">✔</font> Container ctfd-cache-1  <font color="#A6E22E">Stopped</font>                                 <font color="#66D9EF">0.3s </font>
+ <font color="#A6E22E">✔</font> Container ctfd-ctfd-1   <font color="#A6E22E">Stopped</font>                                 <font color="#66D9EF">1.1s </font>
+ <font color="#A6E22E">✔</font> Container ctfd-db-1     <font color="#A6E22E">Stopped</font>                                 <font color="#66D9EF">0.4s </font>
+
+root@ubuntu-s-1vcpu-2gb-fra1-01:~/CTFd# docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+</code></pre></div>
+
+
+<h3 id="request-a-lets-encrypt-certificate">Request a Let&rsquo;s Encrypt certificate</h3>
+<p>We will use the <a href="https://eff-certbot.readthedocs.io/en/stable/install.html#alternative-1-docker">docker method</a> to request a certificate.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo docker run -it --rm --name certbot <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>            -v <span style="color:#e6db74">&#34;/etc/letsencrypt:/etc/letsencrypt&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>            -v <span style="color:#e6db74">&#34;/var/lib/letsencrypt:/var/lib/letsencrypt&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>            -p 80:80 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>            -p 443:443 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>            certbot/certbot certonly
+</span></span></code></pre></div><p><strong>Choose</strong> the <strong>option 1</strong> to spin-up a temporary server:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plain" data-lang="plain"><span style="display:flex;"><span>How would you like to authenticate with the ACME CA?
+</span></span><span style="display:flex;"><span>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>1: Runs an HTTP server locally which serves the necessary validation files under
+</span></span><span style="display:flex;"><span>the /.well-known/acme-challenge/ request path. Suitable if there is no HTTP
+</span></span><span style="display:flex;"><span>server already running. HTTP challenge only (wildcards not supported).
+</span></span><span style="display:flex;"><span>(standalone)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>2: Saves the necessary validation files to a .well-known/acme-challenge/
+</span></span><span style="display:flex;"><span>directory within the nominated webroot path. A separate HTTP server must be
+</span></span><span style="display:flex;"><span>running and serving files from the webroot path. HTTP challenge only (wildcards
+</span></span><span style="display:flex;"><span>not supported). (webroot)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+</span></span><span style="display:flex;"><span>Select the appropriate number [1-2] then [enter] (press &#39;c&#39; to cancel): 1
+</span></span></code></pre></div><p>And <strong>enter</strong> your <strong>domain name</strong>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plain" data-lang="plain"><span style="display:flex;"><span>Please enter the domain name(s) you would like on your certificate (comma and/or
+</span></span><span style="display:flex;"><span>space separated) (Enter &#39;c&#39; to cancel): ctf.lasne.pro
+</span></span><span style="display:flex;"><span>Requesting a certificate for ctf.lasne.pro
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Successfully received certificate.
+</span></span><span style="display:flex;"><span>Certificate is saved at: /etc/letsencrypt/live/ctf.lasne.pro/fullchain.pem
+</span></span><span style="display:flex;"><span>Key is saved at:         /etc/letsencrypt/live/ctf.lasne.pro/privkey.pem
+</span></span><span style="display:flex;"><span>This certificate expires on 2025-04-06.
+</span></span></code></pre></div><h3 id="copy-the-certificate-to-the-nginx-container">Copy the certificate to the nginx container</h3>
+<p>The certificate should be in <code>/etc/letsencrypt/live/your_domain/</code>:</p>
+
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">root@ctf:~/CTFd# ls /etc/letsencrypt/live/ctf.lasne.pro/
+README  <font color="#A1EFE4"><b>cert.pem</b></font>  <font color="#A1EFE4"><b>chain.pem</b></font>  <font color="#A1EFE4"><b>fullchain.pem</b></font>  <font color="#A1EFE4"><b>privkey.pem</b></font>
+</code></pre></div>
+
+
+<p>Copy the files to the <code>CTFd/conf/nginx</code> directory.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Inside your CTFd repo directory</span>
+</span></span><span style="display:flex;"><span>cp /etc/letsencrypt/live/your_domain/fullchain.pem ./conf/nginx/fullchain.pem
+</span></span><span style="display:flex;"><span>cp /etc/letsencrypt/live/your_domain/privkey.pem ./conf/nginx/privkey.pem
+</span></span></code></pre></div><h3 id="edit-the-docker-composeyml">Edit the <code>docker-compose.yml</code></h3>
+<p>Edit the <code>docker-compose.yml</code> so that <strong>nginx</strong> can <strong>access these files</strong>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">./conf/nginx/http.conf:/etc/nginx/nginx.conf</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">./conf/nginx/fullchain.pem:/certificates/fullchain.pem:ro</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">./conf/nginx/privkey.pem:/certificates/privkey.pem:ro</span>
+</span></span></code></pre></div><p>Let&rsquo;s also <strong>expose</strong> the <strong>port 443</strong> for HTTPS:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">80</span>:<span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">443</span>:<span style="color:#ae81ff">443</span>
+</span></span></code></pre></div><p>The nginx section of the <code>docker-compose.yml</code> should look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#f92672">nginx</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx:stable</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">./conf/nginx/http.conf:/etc/nginx/nginx.conf</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">./conf/nginx/fullchain.pem:/certificates/fullchain.pem:ro</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">./conf/nginx/privkey.pem:/certificates/privkey.pem:ro</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">80</span>:<span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">443</span>:<span style="color:#ae81ff">443</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">depends_on</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ctfd</span>
+</span></span></code></pre></div><h3 id="edit-the-nginx-configuration">Edit the nginx configuration</h3>
+<p>Edit the file <code>conf/nginx/http.conf</code> and add a redirection from http to https.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">server {</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">listen 80;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">return 301 https://$host$request_uri;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>And <strong>configure</strong> the <strong>certificates</strong>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">server {</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">listen 443 ssl;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">ssl_certificate /certificates/fullchain.pem;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">ssl_certificate_key /certificates/privkey.pem;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">ssl_ciphers HIGH:!aNULL:!MD5;</span>
+</span></span></code></pre></div><p>Your complete <code>conf/nginx/http.conf</code> should look something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">worker_processes 4;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">events {</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">worker_connections 1024;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">http {</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Configuration containing list of application servers</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">upstream app_servers {</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">server ctfd:8000;</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">server {</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">listen 80;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">return 301 https://$host$request_uri;</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">server {</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">listen 443 ssl;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">ssl_certificate /certificates/fullchain.pem;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">ssl_certificate_key /certificates/privkey.pem;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">ssl_ciphers HIGH:!aNULL:!MD5;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">gzip on;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">client_max_body_size 4G;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Handle Server Sent Events for Notifications</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">location /events {</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_pass http://app_servers;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_set_header Connection &#39;&#39;;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_http_version 1.1;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">chunked_transfer_encoding off;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_buffering off;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_cache off;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_redirect off;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_set_header Host $host;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_set_header X-Real-IP $remote_addr;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_set_header X-Forwarded-Host $server_name;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Proxy connections to the application servers</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">location / {</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_pass http://app_servers;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_redirect off;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_set_header Host $host;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_set_header X-Real-IP $remote_addr;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">proxy_set_header X-Forwarded-Host $server_name;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="restart-the-containers">Restart the containers</h3>
+<p>Everything should be good now. Restart the containers with <code>docker compose up -d</code>.</p>
+
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">root@ubuntu-s-1vcpu-2gb-fra1-01:~/CTFd# docker compose up -d
+<font color="#66D9EF">[+] Running 4/4</font>
+ <font color="#A6E22E">✔</font> Container ctfd-cache-1  <font color="#A6E22E">Started</font>                                           <font color="#66D9EF">0.7s </font>
+ <font color="#A6E22E">✔</font> Container ctfd-db-1     <font color="#A6E22E">Started</font>                                           <font color="#66D9EF">0.7s </font>
+ <font color="#A6E22E">✔</font> Container ctfd-ctfd-1   <font color="#A6E22E">Started</font>                                           <font color="#66D9EF">1.4s </font>
+ <font color="#A6E22E">✔</font> Container ctfd-nginx-1  <font color="#A6E22E">Started</font>                                           <font color="#66D9EF">2.5s </font>
+</code></pre></div>
+
+
+<p>Your CTFd is now available with HTTPS.</p>
+<p><img src="/deploy_ctfd/ctfd_https.png" alt="CTFd instance with HTTPS"></p>
+<h1 id="conclusion">Conclusion</h1>
+<p>In this article we have seen how to deploy a CTFd instance with HTTPS.
+The HTTPS configuration adds a few steps, but they are pretty straightforward.</p>
+<p>Happy hacking !</p>
+
+</div>
+
+        <footer class="post-footer clearfix"><div class="share">
+    </div>
+</footer>
+    </article>
+</div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a href="http://localhost:43385/">Olivier LASNE</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
+                        <i class="fa fa-angle-up" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2025 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="http://localhost:43385/js/jquery-1.11.3.min.js"></script>
+        <script src="http://localhost:43385/js/jquery.fitvids.js"></script>
+        <script src="http://localhost:43385/js/scripts.js"></script>
+        
+    </body>
+</html>
+

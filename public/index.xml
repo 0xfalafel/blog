@@ -2,95 +2,46 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Olivier LASNE</title>
-    <link>http://localhost:1313/</link>
+    <link>http://localhost:46465/</link>
     <description>Recent content on Olivier LASNE</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 21 Dec 2024 14:49:47 +0100</lastBuildDate>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Package Rust Gtk4 apps with flatpak</title>
-      <link>http://localhost:1313/posts/package_rust_gtk4_with_flatpak/</link>
-      <pubDate>Sat, 21 Dec 2024 14:49:47 +0100</pubDate>
-      <guid>http://localhost:1313/posts/package_rust_gtk4_with_flatpak/</guid>
-      <description>I have played around with Gtk 4 and Rust to write Desktop applications.&#xA;But I did struggle a lot to package them with Flatpak.&#xA;In this article we will see how to package a simple Gtk 4 app with Flatpak for Gnome and Elementary OS. Will will also do an example for Relm4 which make writing Gtk 4 for Rust a lot more pleasant.&#xA;Also, please note that we don&amp;rsquo;t need Meson, so we won&amp;rsquo;t use it.</description>
-    </item>
-    <item>
-      <title>Windows_usefull_commands</title>
-      <link>http://localhost:1313/posts/windows_usefull_commands/</link>
-      <pubDate>Wed, 25 Sep 2024 16:58:15 +0200</pubDate>
-      <guid>http://localhost:1313/posts/windows_usefull_commands/</guid>
-      <description>Deactivate Windows Firewall Set-NetFirewallProfile -Enabled False Make a user admin net localgroup &amp;#34;Administrators&amp;#34; /add &amp;#34;UserAccountName&amp;#34; Deactivate Windows Defender Get-MpComputerStatus | Select-Object -Property Antivirusenabled,AMServiceEnabled,AntispywareEnabled,BehaviorMonitorEnabled,IoavProtectionEnabled,NISEnabled,OnAccessProtectionEnabled,RealTimeProtectionEnabled,IsTamperProtected,AntivirusSignatureLastUpdatedCopied Disable Defender&#xA;Set-MpPreference -DisableRealtimeMonitoring $true Disable the cloud-delivered protection:&#xA;Set-MpPreference -MAPSReporting Disabled OpenSSH Install OpenSSH&#xA;Get-WindowsCapability -Online | Where-Object Name -like &amp;#39;OpenSSH*&amp;#39; Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0 Start SSH&#xA;Start-Service -Name sshd Set Startup Type automatic&#xA;Set-Service sshd -StartupType Automatic Make Powershell the default shell&#xA;New-ItemProperty -Path &amp;#34;HKLM:\SOFTWARE\OpenSSH&amp;#34; -Name DefaultShell -Value &amp;#34;C:\Windows\System32\WindowsPowerShell\v1.</description>
-    </item>
-    <item>
-      <title>Fix_virtualbox</title>
-      <link>http://localhost:1313/posts/fix_virtualbox/</link>
-      <pubDate>Wed, 25 Sep 2024 11:52:27 +0200</pubDate>
-      <guid>http://localhost:1313/posts/fix_virtualbox/</guid>
-      <description>The bug One infamous bug often encountered on Linux when using Virtualbox is the error :``&#xA;Add a screenshot&#xA;Virtualbox will tell you to run the command&#xA;sudo /sbin/vboxconfig But you will likely be meet with another error.&#xA;Root cause Virtualbox relies on a bunch of kernel modules to handle virtualization:&#xA;❯ lsmod | grep vbox vboxnetadp 28672 0 vboxnetflt 32768 1 vboxdrv 696320 4 vboxnetadp,vboxnetflt When there is a kernel upgrade, for some reason the kernel module aren&amp;rsquo;t created automaticaly.</description>
-    </item>
-    <item>
-      <title>Active Directory Lab with Vagrant - Part 2</title>
-      <link>http://localhost:1313/posts/ad_lab_part2/</link>
-      <pubDate>Fri, 20 Sep 2024 17:47:23 +0200</pubDate>
-      <guid>http://localhost:1313/posts/ad_lab_part2/</guid>
-      <description>Install the Domain Controller.&#xA;Introduction This is 2nd article of a 3 part series.&#xA;part 1: Create a Windows Server 2022 VM with vagrant. part 2: Install the Domain Controller. part 3: Add some misconfigurations, and test them with netexec. In the previous article we have created a Windows Server 2022 virtual machine using vagrant.&#xA;Now we are going to install the Domain Controller with powershell.&#xA;Current configuration If you have followed the previous article, your Vagrantfile should look like this:</description>
-    </item>
+    <lastBuildDate>Fri, 20 Sep 2024 10:09:12 +0200</lastBuildDate>
+    <atom:link href="http://localhost:46465/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Active Directory Lab with Vagrant - Part 1</title>
-      <link>http://localhost:1313/posts/ad_lab_part1/</link>
+      <link>http://localhost:46465/posts/ad_lab_part1/</link>
       <pubDate>Fri, 20 Sep 2024 10:09:12 +0200</pubDate>
-      <guid>http://localhost:1313/posts/ad_lab_part1/</guid>
-      <description>Create a Windows Server 2022 VM with vagrant&#xA;Introduction We are going to see how you can easily create an Active Directory home lab with Vagrant, VirtualBox and Powershell.&#xA;This is a 3 part series. In this article, will use Vagrant to create an Windows Server 2022.&#xA;part 1: Create a Windows Server 2022 VM with vagrant. part 2: Install the Domain Controller. part 3: Add some misconfigurations, and test them with netexec.</description>
-    </item>
-    <item>
-      <title>Survive and thrive offline</title>
-      <link>http://localhost:1313/posts/offline_websites/</link>
-      <pubDate>Mon, 12 Aug 2024 22:08:15 +0200</pubDate>
-      <guid>http://localhost:1313/posts/offline_websites/</guid>
-      <description>Tips and tricks to navigate an offline world&#xA;I travel as much as possible by train 🚂.&#xA;One of the thing that I enjoy the most about traveling by train is that I can use my computer during that time. Instead of looking at the car window for 5 hours straight.&#xA;Insert GIF here&#xA;Despite missing an major [medition](dr K) oportunity. I can code and play CTF during that time.</description>
+      <guid>http://localhost:46465/posts/ad_lab_part1/</guid>
+      <description>&lt;blockquote&gt;&#xA;&lt;p&gt;Create a Windows Server 2022 VM with vagrant&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;We are going to see how you can easily create an &lt;strong&gt;Active Directory&lt;/strong&gt; home &lt;strong&gt;lab&lt;/strong&gt; with &lt;strong&gt;Vagrant&lt;/strong&gt;, &lt;strong&gt;VirtualBox&lt;/strong&gt; and &lt;strong&gt;Powershell&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;p&gt;This is a 3 part series. In &lt;strong&gt;this article&lt;/strong&gt;, will use &lt;strong&gt;Vagrant&lt;/strong&gt; to create an &lt;strong&gt;Windows Server 2022&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;part 1: &lt;a href=&#34;&#34;&gt;Create a Windows Server 2022 VM with vagrant.&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;part 2: &lt;a href=&#34;https://t.ly/ptO4n&#34;&gt;Install the Domain Controller.&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;part 3: &lt;a href=&#34;https://t.ly/ptO4n&#34;&gt;Add some misconfigurations&lt;/a&gt;, and test them with netexec.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;If you are &lt;strong&gt;already familiar with Vagrant&lt;/strong&gt;, you might want to &lt;strong&gt;skip&lt;/strong&gt; directly &lt;strong&gt;to&lt;/strong&gt; the &lt;a href=&#34;https://t.ly/ptO4n&#34;&gt;install the Domain Controler&lt;/a&gt; section.&lt;/p&gt;</description>
     </item>
     <item>
       <title>You don&#39;t need NordVPN (if you have SSH)</title>
-      <link>http://localhost:1313/posts/bypass_country_restrictions_with_ssh/</link>
+      <link>http://localhost:46465/posts/bypass_country_restrictions_with_ssh/</link>
       <pubDate>Sat, 03 Aug 2024 09:47:56 +0200</pubDate>
-      <guid>http://localhost:1313/posts/bypass_country_restrictions_with_ssh/</guid>
-      <description>Let&amp;rsquo;s say, hypothetically, you want to see the replay of Teddy Riner kicking ass at the Olympics.&#xA;But you&amp;rsquo;re not in France, so France TV blocks you if your IP is not French.&#xA;Your operator locates you in an area where this video is not available (Denmark).&#xA;At this point, you might think about taking a VPN subscription or find a free shaddy VPN that will inject malware into unencrypted HTTP pages.</description>
+      <guid>http://localhost:46465/posts/bypass_country_restrictions_with_ssh/</guid>
+      <description>&lt;p&gt;Let&amp;rsquo;s say, &lt;em&gt;hypothetically&lt;/em&gt;, you want to see the replay of Teddy Riner kicking ass at the Olympics.&lt;/p&gt;&#xA;&lt;p&gt;But you&amp;rsquo;re not in France, so &lt;strong&gt;&lt;em&gt;France TV&lt;/em&gt; blocks you&lt;/strong&gt; if your &lt;strong&gt;IP is not French&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;http://localhost:46465/bypass_country/blocked.png&#34; alt=&#34;France TV player indicating that the content is blocked&#34;&gt;&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;Your operator locates you in an area where this video is not available (Denmark).&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;At this point, you might think about taking a &lt;strong&gt;VPN subscription&lt;/strong&gt; or find a free shaddy VPN that will inject malware into unencrypted HTTP pages.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Writeup: Workshop Netexec LeHack 2024</title>
-      <link>http://localhost:1313/posts/netexec-workshop-lehack2024/</link>
+      <link>http://localhost:46465/posts/netexec-workshop-lehack2024/</link>
       <pubDate>Fri, 12 Jul 2024 15:42:13 +0200</pubDate>
-      <guid>http://localhost:1313/posts/netexec-workshop-lehack2024/</guid>
-      <description>Mise à jour du 19 septembre 2024: si vous souhaitez refaire ce lab. Vous pouvez désormais l&amp;rsquo;installer en local avec Vargant: https://github.com/Pennyw0rth/NetExec-Lab/tree/main/LeHack-2024.&#xA;Mise à jour du 11 juillet 2024: ajout de ce qui peut être détecté avec Bloodhound. Un grand merci à Maël et Rayan qui m&amp;rsquo;ont partagé leurs extract Bloodhound.&#xA;Introduction Cette année encore, @mpgn nous a régalé un workshop Active Directory à LeHack 2024.&#xA;L&amp;rsquo;accès était fourni via un fichier de configuration openvpn.</description>
+      <guid>http://localhost:46465/posts/netexec-workshop-lehack2024/</guid>
+      <description>&lt;blockquote&gt;&#xA;&lt;p&gt;Mise à jour du 19 septembre 2024: si vous souhaitez refaire ce lab. Vous pouvez désormais l&amp;rsquo;installer en local avec Vargant: &lt;a href=&#34;https://github.com/Pennyw0rth/NetExec-Lab/tree/main/LeHack-2024&#34;&gt;https://github.com/Pennyw0rth/NetExec-Lab/tree/main/LeHack-2024&lt;/a&gt;.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;Mise à jour du 11 juillet 2024: ajout de ce qui peut être détecté avec &lt;strong&gt;Bloodhound&lt;/strong&gt;. Un grand merci à &lt;a href=&#34;https://www.linkedin.com/in/mael-rolland/&#34;&gt;Maël&lt;/a&gt; et &lt;a href=&#34;https://x.com/rayanlecat&#34;&gt;Rayan&lt;/a&gt; qui m&amp;rsquo;ont partagé leurs extract &lt;em&gt;Bloodhound&lt;/em&gt;.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;&#xA;&lt;p&gt;Cette année encore, &lt;a href=&#34;https://x.com/mpgn_x64&#34;&gt;@mpgn&lt;/a&gt; nous a régalé un &lt;a href=&#34;https://lehack.org/track/active-directory-pwnage-with-netexec/&#34;&gt;workshop Active Directory&lt;/a&gt; à &lt;strong&gt;LeHack 2024&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;p&gt;L&amp;rsquo;accès était fourni via un fichier de configuration &lt;em&gt;openvpn&lt;/em&gt;.&lt;br&gt;&#xA;Le réseau &lt;code&gt;10.0.0.0/24&lt;/code&gt; était composé de &lt;strong&gt;4 machines&lt;/strong&gt;, dans un thème &lt;strong&gt;astérix&lt;/strong&gt; pour cette année.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Writeup: Trick or Deal</title>
-      <link>http://localhost:1313/posts/trick-or-deal/</link>
+      <link>http://localhost:46465/posts/trick-or-deal/</link>
       <pubDate>Wed, 07 Jun 2023 12:54:04 +0200</pubDate>
-      <guid>http://localhost:1313/posts/trick-or-deal/</guid>
-      <description>Introduction Trick or Deal is a Medium retired hackthebox pwn challenge. It has 97 solves and no writeup at the publication of this blog post.&#xA;This binary has a secret function unlock_storage(), and a Use-After-Free vulnerability.&#xA;To exploit this binary, I will use pwndbg and pwntools.&#xA;Ghidra was also used for the analysis. The snippets of C code were obtained using the Ghidra decompiler.&#xA;Analysis The binary gives us a menu with 5 actions.</description>
-    </item>
-    <item>
-      <title>Colored Terminal in Blog Posts</title>
-      <link>http://localhost:1313/posts/colored-terminal-in-blog-posts/</link>
-      <pubDate>Sat, 06 May 2023 17:45:40 +0200</pubDate>
-      <guid>http://localhost:1313/posts/colored-terminal-in-blog-posts/</guid>
-      <description></description>
+      <guid>http://localhost:46465/posts/trick-or-deal/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;&#xA;&lt;p&gt;&lt;strong&gt;Trick or Deal&lt;/strong&gt; is a &lt;em&gt;Medium&lt;/em&gt; retired &lt;a href=&#34;https://app.hackthebox.com/challenges/trick-or-deal&#34;&gt;hackthebox&lt;/a&gt; &lt;em&gt;&lt;strong&gt;pwn&lt;/strong&gt;&lt;/em&gt; challenge. It has 97 solves and no writeup at the publication of this blog post.&lt;/p&gt;&#xA;&lt;p&gt;This binary has a secret function &lt;code&gt;unlock_storage()&lt;/code&gt;, and a &lt;strong&gt;Use-After-Free&lt;/strong&gt; vulnerability.&lt;/p&gt;&#xA;&lt;p&gt;To exploit this binary, I will use &lt;a href=&#34;https://github.com/pwndbg/pwndbg&#34;&gt;pwndbg&lt;/a&gt; and &lt;a href=&#34;https://docs.pwntools.com/en/stable/&#34;&gt;pwntools&lt;/a&gt;.&lt;br&gt;&#xA;&lt;a href=&#34;https://ghidra-sre.org/&#34;&gt;Ghidra&lt;/a&gt; was also used for the analysis. The snippets of &lt;strong&gt;C&lt;/strong&gt; code were obtained using the &lt;em&gt;Ghidra decompiler&lt;/em&gt;.&lt;/p&gt;&#xA;&lt;h1 id=&#34;analysis&#34;&gt;Analysis&lt;/h1&gt;&#xA;&lt;p&gt;The binary gives us a &lt;strong&gt;menu&lt;/strong&gt; with &lt;strong&gt;5 actions&lt;/strong&gt;. Each action will call a function.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Hello world</title>
-      <link>http://localhost:1313/posts/my-first-post/</link>
+      <link>http://localhost:46465/posts/my-first-post/</link>
       <pubDate>Fri, 05 May 2023 18:50:40 +0200</pubDate>
-      <guid>http://localhost:1313/posts/my-first-post/</guid>
-      <description>Welcome Welcome to my blog, I promise that there will be more content.&#xA;____________ &amp;lt; Hi Friends &amp;gt; ------------ \ . . \ / `. .&amp;#39; &amp;#34; \ .---. &amp;lt; &amp;gt; &amp;lt; &amp;gt; .---. \ | \ \ - ~ ~ - / / | _____ ..-~ ~-..-~ | | \~~~\.&amp;#39; `./~~~/ --------- \__/ \__/ .&amp;#39; O \ / / \ &amp;#34; (_____, `._.&amp;#39; | } \/~~~/ `----. / } | / \__/ `-.</description>
-    </item>
-    <item>
-      <title>Using Nix packages</title>
-      <link>http://localhost:1313/posts/using-nix-packages/</link>
-      <pubDate>Fri, 05 May 2023 18:50:40 +0200</pubDate>
-      <guid>http://localhost:1313/posts/using-nix-packages/</guid>
-      <description>Nix Enable experimental features Config files&#xA;/etc/nix/nix.conf&#xA;experimental-features = nix-command flakes nix search nixpkgs lldb nix search nixpkgs lldb nix-env -i lldb </description>
+      <guid>http://localhost:46465/posts/my-first-post/</guid>
+      <description>&lt;h2 id=&#34;welcome&#34;&gt;Welcome&lt;/h2&gt;&#xA;&lt;p&gt;Welcome to my blog, I &lt;em&gt;promise&lt;/em&gt; that there will be more content.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt; ____________&#xA;&amp;lt; Hi Friends &amp;gt;&#xA; ------------&#xA;\                             .       .&#xA; \                           / `.   .&amp;#39; &amp;#34; &#xA;  \                  .---.  &amp;lt;    &amp;gt; &amp;lt;    &amp;gt;  .---.&#xA;   \                 |    \  \ - ~ ~ - /  /    |&#xA;         _____          ..-~             ~-..-~&#xA;        |     |   \~~~\.&amp;#39;                    `./~~~/&#xA;       ---------   \__/                        \__/&#xA;      .&amp;#39;  O    \     /               /       \  &amp;#34; &#xA;     (_____,    `._.&amp;#39;               |         }  \/~~~/&#xA;      `----.          /       }     |        /    \__/&#xA;            `-.      |       /      |       /      `. ,~~|&#xA;                ~-.__|      /_ - ~ ^|      /- _      `..-&amp;#39;   &#xA;                     |     /        |     /     ~-.     `-. _  _  _&#xA;                     |_____|        |_____|         ~ - . _ _ _ _ _&amp;gt;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I plan to talk about &lt;strong&gt;cybersecurity&lt;/strong&gt;. Mostly &lt;strong&gt;CTF&lt;/strong&gt;, and &lt;strong&gt;binary exploitation&lt;/strong&gt;.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

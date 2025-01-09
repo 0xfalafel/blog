@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html>
-    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=43385&amp;path=livereload" data-no-instant defer></script>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Package Rust Gtk4 apps with flatpak &middot; </title>
         <meta name="description" content="I have played around with Gtk 4 and Rust to write Desktop applications.
 But I did struggle a lot to package them with Flatpak.
-In this article we will see how to package a simple Gtk 4 app with Flatpak for Gnome and Elementary OS. Will will also do an example for Relm4 which make writing Gtk 4 for Rust a lot more pleasant.
-Also, please note that we don&rsquo;t need Meson, so we won&rsquo;t use it.">
+In this article we will see how to package a simple Gtk 4 app with Flatpak for Gnome and Elementary OS.
+Will will also do an example for Relm4 which make writing Gtk 4 for Rust a lot more pleasant.
+Also, please note that we don&rsquo;t need Meson, so we won&rsquo;t use it. But you will have to use something else for translations.">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
-        <meta name="generator" content="Hugo 0.128.2">
+        <meta name="generator" content="Hugo 0.140.2">
         <meta name="robots" content="index,follow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
-        <link rel="stylesheet" href="http://localhost:1313/dist/site.css">
-        <link rel="stylesheet" href="http://localhost:1313/dist/syntax.css">
+        <link rel="stylesheet" href="http://localhost:43385/dist/site.css">
+        <link rel="stylesheet" href="http://localhost:43385/dist/syntax.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
         
@@ -27,9 +28,6 @@ Also, please note that we don&rsquo;t need Meson, so we won&rsquo;t use it.">
     </head>
     <body>
         
-  
-
-
 
         <div id="wrapper">
             <header class="site-header">
@@ -37,7 +35,7 @@ Also, please note that we don&rsquo;t need Meson, so we won&rsquo;t use it.">
                     <div class="site-title-wrapper">
                         
                             <h1 class="site-title">
-                                <a href="http://localhost:1313/">Olivier LASNE</a>
+                                <a href="http://localhost:43385/">Olivier LASNE</a>
                             </h1>
                         
                         
@@ -107,7 +105,7 @@ Will will also do an example for <strong><a href="https://relm4.org/">Relm4</a><
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; <span style="color:#a6e22e">glib</span>::ExitCode {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> application <span style="color:#f92672">=</span> gtk::Application::builder()
-</span></span><span style="display:flex;"><span>        .application_id(<span style="color:#e6db74">&#34;pro.lasne.demo&#34;</span>)
+</span></span><span style="display:flex;"><span>        .application_id(<span style="color:#e6db74">&#34;pro.lasne.demo-app&#34;</span>)
 </span></span><span style="display:flex;"><span>        .build();
 </span></span><span style="display:flex;"><span>    application.connect_activate(build_ui);
 </span></span><span style="display:flex;"><span>    application.run()
@@ -133,13 +131,18 @@ You can also look at the <a href="https://gtk-rs.org/gtk4-rs/stable/latest/book/
 <p>We define a <em>window size</em> (200x70), a <em>title</em>.
 And then we create a <em>button</em>, and associate a <em>event</em> when the button is clicked.</p>
 <h3 id="run-the-code">Run the code</h3>
-<p>If everything is correctly setup, you should be able to run your app with.</p>
+<p>We can <strong>build the app</strong> with</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cargo build
+</span></span></code></pre></div><p>or</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cargo build --release
+</span></span></code></pre></div><p>This will create the binary <code>./target/release/demo-app</code>.</p>
+<p>If everything is correctly setup, you should be able to <strong>run your app</strong> with.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cargo run
 </span></span></code></pre></div><p>from the <code>demo-app</code> folder. The following window should appear.</p>
 <p><img src="/gtk4-flatpak/demo-app.png" alt="Demo App running"></p>
 <p>Now that our app is running, we need to <strong>choose a runtime to target</strong>. (But what is a runtime you might ask 🤔?)</p>
 <h2 id="a-quick-introduction-to-flatpak-">A quick Introduction to Flatpak 🧑‍🏫</h2>
-<p><a href="https://flatpak.org/">Flatpak</a> is a way to <strong>package Linux apps</strong>, and distribute them for all distributions at once via <a href="https://flathub.org/">flathub</a>. This is achieved by compartimenting each application.</p>
+<p><a href="https://flatpak.org/">Flatpak</a> is a way to <strong>package Linux apps</strong>, and distribute them for all distributions at once via <a href="https://flathub.org/">flathub</a>. This is achieved by isolating each application, and provide them an environment to run in.</p>
 <h3 id="runtimes-">Runtimes 📚️</h3>
 <p>To run, Flatpak apps use a <a href="https://docs.flatpak.org/en/latest/available-runtimes.html"><strong>runtime</strong></a> that provide a <em>base image</em> of the system with shared libraries.</p>
 <p><img src="/gtk4-flatpak/runtimes.svg" alt="Flatpak Runtimes"></p>
@@ -159,15 +162,93 @@ And then we create a <em>button</em>, and associate a <em>event</em> when the bu
 <p>For example, to target <strong>Gnome 47</strong>, we will <strong>install</strong> the <strong>Gnome Platform</strong>, and the <strong>Gnome SDK</strong>.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>flatpak install --user org.gnome.Sdk//47 org.gnome.Platform//47
 </span></span></code></pre></div><p>To build a <strong>Rust program</strong>, we also need to install the <a href="https://github.com/flathub/org.freedesktop.Sdk.Extension.rust-stable"><strong>Rust SDK</strong> extension</a>.<br>
-<em>Gnome 47</em> platform is build on top of the <em>freedesktop 24.08</em> platform, so we are going to install this version of the extension.</p>
+<em>Gnome 47</em> platform is <strong>build on top</strong> of the <em>freedesktop 24.08</em> platform, so we are going to install this version of the extension.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>flatpak install --user org.freedesktop.Sdk.Extension.rust-stable//24.08 org.freedesktop.Sdk.Extension.llvm18//24.08
 </span></span></code></pre></div><h2 id="flatpak-our-app-">Flatpak our App 📦️</h2>
-<p>Every flatpak starts with a <strong>Manifest</strong>.</p>
-<p>This file define:</p>
+<p>Every flatpak is defined by a <strong>Manifest</strong>.</p>
+<p>A <strong><em>manifest</em> defines</strong>:</p>
 <ul>
-<li>the runtimes</li>
-<li>the files</li>
+<li>the <strong>runtime</strong> used</li>
+<li>instructions for <strong>building</strong> the app</li>
+<li><strong>where</strong> the <strong>files</strong> are <strong>installed</strong>.</li>
 </ul>
+<p>A manifest can be either in <em>json</em> or in <em>yaml</em>.</p>
+<p>Since our <strong>app ID</strong> is <code>pro.lasne.demo-app</code>, let&rsquo;s <strong>create</strong> a <code>pro.lasne.demo-app.yml</code> <strong>manifest</strong> at the root of our project.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-YAML" data-lang="YAML"><span style="display:flex;"><span><span style="color:#f92672">app-id</span>: <span style="color:#ae81ff">pro.lasne.demo-app</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">runtime</span>: <span style="color:#ae81ff">org.gnome.Platform</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">runtime-version</span>: <span style="color:#e6db74">&#39;47&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">sdk</span>: <span style="color:#ae81ff">org.gnome.Sdk</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">sdk-extensions</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#ae81ff">org.freedesktop.Sdk.Extension.rust-stable</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">command</span>: <span style="color:#ae81ff">demo-app</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">finish-args</span>:
+</span></span><span style="display:flex;"><span>  - --<span style="color:#ae81ff">share=ipc</span>
+</span></span><span style="display:flex;"><span>  - --<span style="color:#ae81ff">socket=fallback-x11</span>
+</span></span><span style="display:flex;"><span>  - --<span style="color:#ae81ff">socket=wayland</span>
+</span></span><span style="display:flex;"><span>  - --<span style="color:#ae81ff">device=dri</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">build-options</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">append-path</span>: <span style="color:#ae81ff">/usr/lib/sdk/rust-stable/bin</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">modules</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">demo-app</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">buildsystem</span>: <span style="color:#ae81ff">simple</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">build-options</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">env</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">CARGO_HOME</span>: <span style="color:#ae81ff">/run/build/demo-app/cargo</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">build-commands</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">cargo --offline fetch --manifest-path Cargo.toml --verbose</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">cargo --offline build --release --verbose</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">install -Dm755 ./target/release/demo-app -t /app/bin/</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">sources</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">dir</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">path</span>: <span style="color:#ae81ff">.</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">cargo-sources.json</span>
+</span></span></code></pre></div><p>Let&rsquo;s explore a bit what we have here.</p>
+<h4 id="common-flatpak-informations">Common Flatpak informations:</h4>
+<ul>
+<li><code>app-id</code>: the <strong>ID</strong> of our app, with a reverse-DNS scheme.</li>
+<li><code>command</code>: the <strong>command executed</strong> to run our app.</li>
+</ul>
+<h4 id="gnome-runtime">Gnome Runtime:</h4>
+<ul>
+<li>the <strong><code>runtime</code></strong> and <code>sdk</code>: here we target <em><strong>Gnome 47</strong></em>.</li>
+<li>We also need to define some <code>finish-args</code> to let our app <strong>access</strong> the <strong>graphical</strong> server <em>X</em> or <em>Wayland</em>.</li>
+</ul>
+<h4 id="rust">Rust:</h4>
+<ul>
+<li><code>sdk-extensions</code>: <strong>adds</strong> the <strong>Rust SDK</strong> to our runtime.</li>
+<li><code>build-commands</code>: some commands to <strong>build</strong> our app <strong>with <code>cargo</code></strong>.</li>
+<li><code>install</code>: is used to copy <code>demo-app</code> to <code>/app/bin/</code>.</li>
+</ul>
+<h3 id="integrate-cargo-with-flatpak-builder-">Integrate Cargo with Flatpak Builder 🪄</h3>
+<p>We have <strong>one last thing</strong> to do before building our app.<br>
+You might have notice is the <code>cargo-sources.json</code> in the manifest.</p>
+<p>To build the app with <code>cargo</code> in a flatpak. We need to generate this file using the script <a href="https://github.com/flatpak/flatpak-builder-tools/blob/master/cargo/flatpak-cargo-generator.py"><code>flatpak-cargo-generator.py</code></a> from the <a href="https://github.com/flatpak/flatpak-builder-tools">flatpak-builder-tools</a> repository.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python3 flatpak-cargo-generator.py Cargo.lock -o cargo-sources.json
+</span></span></code></pre></div><h2 id="build-and-install-">Build and Install 🛠️</h2>
+<p>We can finally build our flatpak.</p>
+<p>Your source directory should look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>demo-app
+</span></span><span style="display:flex;"><span>├── Cargo.toml
+</span></span><span style="display:flex;"><span>├── Cargo.lock
+</span></span><span style="display:flex;"><span>├── cargo-sources.json
+</span></span><span style="display:flex;"><span>├── pro.lasne.demo-app.yml
+</span></span><span style="display:flex;"><span>├── src
+</span></span><span style="display:flex;"><span>│   └── main.rs
+</span></span><span style="display:flex;"><span>└── target
+</span></span></code></pre></div><p>You can <strong>build the app</strong> with:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>flatpak-builder --user flatpak_app pro.lasne.demo-app.yml --force-clean
+</span></span></code></pre></div><p>If everything works without errors. You can install the app on you system.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>flatpak-builder --user flatpak_app pro.lasne.demo-app.yml --force-clean --install
+</span></span></code></pre></div><p>Your app should now be listed with the installed flatpak:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ flatpak list
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>demo-app        pro.lasne.demo-app              master  demo-app-origin user
+</span></span></code></pre></div><p>You can run it with</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>flatpak run pro.lasne.demo-app
+</span></span></code></pre></div><p><img src="/gtk4-flatpak/flatpak_run.png" alt="Running the app in a flatpak"></p>
+<h1 id="conclusion">Conclusion</h1>
+<p>In this article we have seen how to package with Flatpak a Gtk 4 app written in Rust.<br>
+In the <a href="">next article</a>, we&rsquo;ll see how to integrate with <em>elementary OS</em>.</p>
 
 </div>
 
@@ -184,7 +265,7 @@ And then we create a <em>button</em>, and associate a <em>event</em> when the bu
             <div class="container">
                 <div class="site-title-wrapper">
                     <h1 class="site-title">
-                        <a href="http://localhost:1313/">Olivier LASNE</a>
+                        <a href="http://localhost:43385/">Olivier LASNE</a>
                     </h1>
                     <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
                         <i class="fa fa-angle-up" aria-hidden="true"></i>
@@ -192,7 +273,7 @@ And then we create a <em>button</em>, and associate a <em>event</em> when the bu
                 </div>
 
                 <p class="footer-copyright">
-                    <span>&copy; 2024 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                    <span>&copy; 2025 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
                 </p>
                 <p class="footer-copyright">
                     <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
@@ -201,9 +282,9 @@ And then we create a <em>button</em>, and associate a <em>event</em> when the bu
             </div>
         </footer>
 
-        <script src="http://localhost:1313/js/jquery-1.11.3.min.js"></script>
-        <script src="http://localhost:1313/js/jquery.fitvids.js"></script>
-        <script src="http://localhost:1313/js/scripts.js"></script>
+        <script src="http://localhost:43385/js/jquery-1.11.3.min.js"></script>
+        <script src="http://localhost:43385/js/jquery.fitvids.js"></script>
+        <script src="http://localhost:43385/js/scripts.js"></script>
         
     </body>
 </html>

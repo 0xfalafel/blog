@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=43385&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Send mails from your server with docker-mailserver &middot; </title>
+        <meta name="description" content="I wanted to be able to send some emails for I project I had.
+Instead of going for something like SendGrid, I figured it couldn&rsquo;t be that hard to deploy a mail server on a VPS.
+Here is what you need:
+
+A domain name, where you can add DNS entries.
+A VPS, here I have an Ubuntu 24.10, but it should carry to any Linux.
+
+Install Docker and Docker Compose
+Let&rsquo;s install docker on our Ubuntu server.">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.140.2">
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="http://localhost:43385/dist/site.css">
+        <link rel="stylesheet" href="http://localhost:43385/dist/syntax.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+        
+
+    </head>
+    <body>
+        
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a href="http://localhost:43385/">Olivier LASNE</a>
+                            </h1>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container">
+        <header class="post-header">
+    <h1 class="post-title">Send mails from your server with docker-mailserver</h1>
+    
+</header>
+
+        <div class="post-content clearfix">
+    
+
+    <p>I wanted to be able to send some emails for I project I had.</p>
+<p>Instead of going for something like SendGrid, I figured it couldn&rsquo;t be <em>that hard</em> to deploy a mail server on a VPS.</p>
+<p>Here is what you need:</p>
+<ul>
+<li>A domain name, where you can add DNS entries.</li>
+<li>A VPS, here I have an Ubuntu 24.10, but it should carry to any Linux.</li>
+</ul>
+<h2 id="install-docker-and-docker-compose">Install Docker and Docker Compose</h2>
+<p>Let&rsquo;s <a href="https://docs.docker.com/engine/install/ubuntu/"><strong>install docker</strong></a> on our <strong>Ubuntu</strong> server.</p>
+<p>Add the docker repository:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Add Docker&#39;s official GPG key:</span>
+</span></span><span style="display:flex;"><span>sudo apt-get update
+</span></span><span style="display:flex;"><span>sudo apt-get install ca-certificates curl
+</span></span><span style="display:flex;"><span>sudo install -m <span style="color:#ae81ff">0755</span> -d /etc/apt/keyrings
+</span></span><span style="display:flex;"><span>sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+</span></span><span style="display:flex;"><span>sudo chmod a+r /etc/apt/keyrings/docker.asc
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Add the repository to Apt sources:</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  <span style="color:#e6db74">&#34;deb [arch=</span><span style="color:#66d9ef">$(</span>dpkg --print-architecture<span style="color:#66d9ef">)</span><span style="color:#e6db74"> signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  </span><span style="color:#66d9ef">$(</span>. /etc/os-release <span style="color:#f92672">&amp;&amp;</span> echo <span style="color:#e6db74">&#34;</span>$VERSION_CODENAME<span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74"> stable&#34;</span> | <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
+</span></span><span style="display:flex;"><span>sudo apt-get update
+</span></span></code></pre></div><p>And then install <code>docker</code>, and <code>docker-compose</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+</span></span></code></pre></div><p>You should now have the <code>docker</code> and <code>docker compose</code> commands.</p>
+<h2 id="clone-the-project">Clone the project</h2>
+<p>We are going to use the <a href="https://github.com/docker-mailserver/docker-mailserver">docker-mailserver</a> project.
+Let&rsquo;s <strong>clone</strong> the <strong>repository</strong>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/docker-mailserver/docker-mailserver.git
+</span></span></code></pre></div><p>There is quite a lot we can do with this. Here we are just setting it up to send emails.</p>
+<p>The <strong>full documentation</strong> of the project is here: <a href="https://docker-mailserver.github.io/docker-mailserver/latest/examples/tutorials/basic-installation/">https://docker-mailserver.github.io/docker-mailserver/latest/examples/tutorials/basic-installation/</a>.</p>
+<p>The main file we are going to use is the <code>compose.yaml</code>. It should look something like this by default:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">mailserver</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">ghcr.io/docker-mailserver/docker-mailserver:latest</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">mailserver</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Provide the FQDN of your mail server here (Your DNS MX record should point to this value)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">hostname</span>: <span style="color:#ae81ff">mail.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">env_file</span>: <span style="color:#ae81ff">mailserver.env</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># More information about the mail-server ports:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># https://docker-mailserver.github.io/docker-mailserver/latest/config/security/understanding-the-ports/</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;25:25&#34;</span>    <span style="color:#75715e"># SMTP  (explicit TLS =&gt; STARTTLS, Authentication is DISABLED =&gt; use port 465/587 instead)</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;143:143&#34;</span>  <span style="color:#75715e"># IMAP4 (explicit TLS =&gt; STARTTLS)</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;465:465&#34;</span>  <span style="color:#75715e"># ESMTP (implicit TLS)</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;587:587&#34;</span>  <span style="color:#75715e"># ESMTP (explicit TLS =&gt; STARTTLS)</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;993:993&#34;</span>  <span style="color:#75715e"># IMAP4 (implicit TLS)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">./docker-data/dms/mail-data/:/var/mail/</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">./docker-data/dms/mail-state/:/var/mail-state/</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">./docker-data/dms/mail-logs/:/var/log/mail/</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">./docker-data/dms/config/:/tmp/docker-mailserver/</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">/etc/localtime:/etc/localtime:ro</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">stop_grace_period</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Uncomment if using `ENABLE_FAIL2BAN=1`:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># cap_add:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   - NET_ADMIN</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">healthcheck</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">test</span>: <span style="color:#e6db74">&#34;ss --listening --tcp | grep -P &#39;LISTEN.+:smtp&#39; || exit 1&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">timeout</span>: <span style="color:#ae81ff">3s</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">retries</span>: <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><p>You can see from the <em>volumes</em> that all the data will be stored inside the <code>./docker-data/</code> folder.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">./docker-data/dms/mail-data/:/var/mail/</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">./docker-data/dms/mail-state/:/var/mail-state/</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">./docker-data/dms/mail-logs/:/var/log/mail/</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">./docker-data/dms/config/:/tmp/docker-mailserver/</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">/etc/localtime:/etc/localtime:ro</span>
+</span></span></code></pre></div><p>The first thing we are going to configure is the <code>hostname</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># Provide the FQDN of your mail server here (Your DNS MX record should point to this value)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">hostname</span>: <span style="color:#ae81ff">mail.example.com</span>
+</span></span></code></pre></div><h2 id="dns-entries">DNS entries</h2>
+<p>In my example, I am going to use the domain <code>ctf.lasne.pro</code>.</p>
+<p>Modify the <code>compose.yml</code> to point to your domain.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># Provide the FQDN of your mail server here (Your DNS MX record should point to this value)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">hostname</span>: <span style="color:#ae81ff">ctf.lasne.pro</span>
+</span></span></code></pre></div><p>As indicated in the file, you will also need to add an <strong>MX entry</strong> for your domain.</p>
+<p>Note that your MX entry <a href="https://serverfault.com/a/54807/516452">should not point to an IP</a>.</p>
+<p>I am using OVH for my domain. Adding an a DNS entry look like this:</p>
+<p><img src="/send_mail_docker/add_DNS_entry_OVH.png" alt="Adding a DNS entry on the OVH website"></p>
+<p>Confirmation dialog:
+<img src="/send_mail_docker/add_DNS_entry_OVH2.png" alt="Adding a DNS entry on the OVH website"></p>
+<p>After this, your DNS entries should look like this:</p>
+<p><img src="/send_mail_docker/OVH_dns_entries.png" alt="Adding a DNS entry on the OVH website"></p>
+<p>You can test your MX entry with the <code>host</code> command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ host -mx ctf.lasne.pro
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ctf.lasne.pro has address 164.92.168.121
+</span></span><span style="display:flex;"><span>ctf.lasne.pro mail is handled by <span style="color:#ae81ff">1</span> ctf.lasne.pro.
+</span></span></code></pre></div><p>You also need to add an SPF field to authorize you domain to send emails.</p>
+<h2 id="add-an-email-address">Add an email address</h2>
+<p>You can use the <code>./setup.sh</code> script to add an email account.</p>
+
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">root@mail-srv:~/docker-mailserver# ./setup.sh 
+<font color="#AE81FF">SETUP</font><font color="#F92672">(</font><font color="#F4BF75">1</font><font color="#F92672">)</font>
+
+<font color="#FFAF00">NAME</font>
+    setup - &apos;docker-mailserver&apos; Administration &amp; Configuration CLI
+
+<font color="#FFAF00">SYNOPSIS</font>
+    setup [ OPTIONS<font color="#F92672">...</font> ] COMMAND [ help <font color="#F92672">|</font> ARGUMENTS<font color="#F92672">...</font> ]
+
+    COMMAND <font color="#F92672">:=</font> { email <font color="#F92672">|</font> alias <font color="#F92672">|</font> quota <font color="#F92672">|</font> dovecot-master <font color="#F92672">|</font> config <font color="#F92672">|</font> relay <font color="#F92672">|</font> debug } SUBCOMMAND
+
+<font color="#FFAF00">DESCRIPTION</font>
+    This is the main administration command that you use for all your interactions with
+    &apos;docker-mailserver&apos;. Initial setup, configuration, and much more is done with this CLI tool.
+
+    Most subcommands can provide additional information and examples by appending &apos;help&apos;.
+    For example: &apos;setup email add help&apos;
+
+<font color="#F92672">[</font><font color="#FFAF00">SUB</font><font color="#F92672">]</font><font color="#FFAF00">COMMANDS</font>
+    <font color="#66D9EF"><b>COMMAND</b></font> email <font color="#F92672">:=</font>
+        setup email <font color="#A1EFE4">add</font> &lt;EMAIL ADDRESS&gt; [&lt;PASSWORD&gt;]
+        setup email <font color="#A1EFE4">update</font> &lt;EMAIL ADDRESS&gt; [&lt;PASSWORD&gt;]
+        setup email <font color="#A1EFE4">del</font> [ OPTIONS<font color="#F92672">...</font> ] &lt;EMAIL ADDRESS&gt; [ &lt;EMAIL ADDRESS&gt;<font color="#F92672">...</font> ]
+        setup email <font color="#A1EFE4">restrict</font> &lt;add<font color="#F92672">|</font>del<font color="#F92672">|</font>list&gt; &lt;send<font color="#F92672">|</font>receive&gt; [&lt;EMAIL ADDRESS&gt;]
+        setup email <font color="#A1EFE4">list</font>
+[...]
+</code></pre></div>
+
+
+<p>We create an email address with this command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>./setup.sh email add no-replay@your.domain.com Str0ngP4ssw0rd
+</span></span><span style="display:flex;"><span>./setup.sh email add tom@ctf.lasne.pro littletommy
+</span></span></code></pre></div><h2 id="start-the-server-and-send-an-email">Start the Server, and send an email</h2>
+<p>We can now start the mail server with <code>docker compose up -d</code>.</p>
+
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;">root@ubuntu-s-1vcpu-2gb-fra1-01:~/docker-mailserver# docker compose up -d
+<font color="#66D9EF">[+] Running 2/2</font>
+ <font color="#A6E22E">✔</font> Network docker-mailserver_default  <font color="#A6E22E">Created</font>    <font color="#66D9EF">0.2s </font>
+ <font color="#A6E22E">✔</font> Container mailserver               <font color="#A6E22E">Started</font>    <font color="#66D9EF">0.7s </font>
+</code></pre></div>
+
+
+<p>To test this, let&rsquo;s send an email with <code>swaks</code>, the SMTP swiss-army knife:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt install swaks
+</span></span></code></pre></div><p><strong>Send an email</strong> with swaks:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks -t lasneolivier@gmail.com -s localhost:587 -au tom@ctf.lasne.pro -ap littletommy -f tom@ctf.lasne.pro --body <span style="color:#e6db74">&#34;Hi mom!&#34;</span> --h-Subject <span style="color:#e6db74">&#34;This is a test message&#34;</span>
+</span></span></code></pre></div><p>If everything works correctly. The following mail should appear in your spams.</p>
+<p><img src="/send_mail_docker/spam.png" alt="Mail in your spams"></p>
+<h2 id="configure-tls-for-the-outgoing-messages">Configure TLS for the outgoing messages</h2>
+<p>You can see the documentation on how to do this here: <a href="https://docker-mailserver.github.io/docker-mailserver/edge/config/security/ssl/#lets-encrypt-recommended">https://docker-mailserver.github.io/docker-mailserver/edge/config/security/ssl/#lets-encrypt-recommended</a>.</p>
+<h3 id="get-a-certificate-from-lets-encrypt">Get a certificate from Let&rsquo;s Encrypt</h3>
+<p>The certificate of Let&rsquo;s Encrypt are stored in <code>/etc/letsencrypt/live/</code> by domain name.
+In our example it will be in <code>/etc/letsencrypt/live/ctf.lasne.pro/</code>.</p>
+<p>You need to give access to this folder to the docker container.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">mailserver</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">hostname</span>: <span style="color:#ae81ff">ctf.lasne.pro</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">SSL_TYPE=letsencrypt</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">/etc/letsencrypt:/etc/letsencrypt</span>
+</span></span></code></pre></div><p>You also need to edit the <code>mailserver.env</code> file.<br>
+To specify that the certificate is done with Let&rsquo;s Encrypt:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># Please read [the SSL page in the documentation](https://docker-mailserver.github.io/docker-mailserver/latest/config/security/ssl) for more information.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># empty =&gt; SSL disabled</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># letsencrypt =&gt; Enables Let&#39;s Encrypt certificates</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># custom =&gt; Enables custom certificates</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># manual =&gt; Let&#39;s you manually specify locations of your SSL certificates for non-standard cases</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># self-signed =&gt; Enables self-signed certificates</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">SSL_TYPE=letsencrypt</span>
+</span></span></code></pre></div><p>Restart the container with</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker compose up -d
+</span></span></code></pre></div><p>We send an email again, but this time we add the <code>-tls</code> option.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>root@ubuntu-s-1vcpu-2gb-fra1-01:~/docker-mailserver# swaks -t lasneolivier@gmail.com -tls -s localhost:587 -au tom@ctf.lasne.pro -ap littletommy -f tom@ctf.lasne.pro --body <span style="color:#e6db74">&#34;Hi mom!&#34;</span> --h-Subject <span style="color:#e6db74">&#34;This is a test message&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> Trying localhost:587...
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> Connected to localhost.
+</span></span><span style="display:flex;"><span>&lt;-  <span style="color:#ae81ff">220</span> ctf.lasne.pro ESMTP
+</span></span><span style="display:flex;"><span> -&gt; EHLO ubuntu-s-1vcpu-2gb-fra1-01
+</span></span><span style="display:flex;"><span>&lt;-  250-ctf.lasne.pro
+</span></span><span style="display:flex;"><span>&lt;-  250-PIPELINING
+</span></span><span style="display:flex;"><span>&lt;-  250-SIZE <span style="color:#ae81ff">10240000</span>
+</span></span><span style="display:flex;"><span>&lt;-  250-ETRN
+</span></span><span style="display:flex;"><span>&lt;-  250-STARTTLS
+</span></span><span style="display:flex;"><span>&lt;-  250-ENHANCEDSTATUSCODES
+</span></span><span style="display:flex;"><span>&lt;-  250-8BITMIME
+</span></span><span style="display:flex;"><span>&lt;-  250-DSN
+</span></span><span style="display:flex;"><span>&lt;-  <span style="color:#ae81ff">250</span> CHUNKING
+</span></span><span style="display:flex;"><span> -&gt; STARTTLS
+</span></span><span style="display:flex;"><span>&lt;-  <span style="color:#ae81ff">220</span> 2.0.0 Ready to start TLS
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> TLS started with cipher TLSv1.3:TLS_AES_256_GCM_SHA384:256
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> TLS client certificate not requested and not sent
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> TLS no client certificate set
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> TLS peer<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span>   subject<span style="color:#f92672">=[</span>/CN<span style="color:#f92672">=</span>ctf.lasne.pro<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span>               commonName<span style="color:#f92672">=[</span>ctf.lasne.pro<span style="color:#f92672">]</span>, subjectAltName<span style="color:#f92672">=[</span>DNS:ctf.lasne.pro<span style="color:#f92672">]</span> notAfter<span style="color:#f92672">=[</span>2025-04-06T13:15:36Z<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> TLS peer<span style="color:#f92672">[</span>1<span style="color:#f92672">]</span>   subject<span style="color:#f92672">=[</span>/C<span style="color:#f92672">=</span>US/O<span style="color:#f92672">=</span>Let<span style="color:#e6db74">&#39;s Encrypt/CN=E6]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">===               commonName=[E6], subjectAltName=[] notAfter=[2027-03-12T23:59:59Z]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">=== TLS peer certificate passed CA verification, failed host verification (using host localhost to verify)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; EHLO ubuntu-s-1vcpu-2gb-fra1-01
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  250-ctf.lasne.pro
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  250-PIPELINING
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  250-SIZE 10240000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  250-ETRN
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  250-AUTH PLAIN LOGIN
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  250-AUTH=PLAIN LOGIN
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  250-ENHANCEDSTATUSCODES
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  250-8BITMIME
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  250-DSN
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  250 CHUNKING
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; AUTH LOGIN
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  334 VXNlcm5hbWU6
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; dG9tQGN0Zi5sYXNuZS5wcm8=
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  334 UGFzc3dvcmQ6
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; bGl0dGxldG9tbXk=
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  235 2.7.0 Authentication successful
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; MAIL FROM:&lt;tom@ctf.lasne.pro&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  250 2.1.0 Ok
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; RCPT TO:&lt;lasneolivier@gmail.com&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  250 2.1.5 Ok
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; DATA
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; Date: Tue, 07 Jan 2025 13:31:09 +0000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; To: lasneolivier@gmail.com
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; From: tom@ctf.lasne.pro
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; Subject: This is a test message
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; Message-Id: &lt;20250107133109.110869@ubuntu-s-1vcpu-2gb-fra1-01&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; X-Mailer: swaks v20240103.0 jetmore.org/john/code/swaks/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; Hi mom!
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; .
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  250 2.0.0 Ok: queued as 39B25F5C4D
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> ~&gt; QUIT
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;~  221 2.0.0 Bye
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">=== Connection closed with remote host.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">root@ubuntu-s-1vcpu-2gb-fra1-01:~/docker-mailserver# 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">root@ubuntu-s-1vcpu-2gb-fra1-01:~/docker-mailserver# swaks -t lasneolivier@gmail.com -tls -s localhost:587 -au tom@ctf.lasne.pro -ap littletommy -f tom@ctf.lasne.pro --body &#34;Hi mom!&#34; --h-Subject &#34;This is a test message&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">=== Trying localhost:587...
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">=== Connected to localhost.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;-  220 ctf.lasne.pro ESMTP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> -&gt; EHLO ubuntu-s-1vcpu-2gb-fra1-01
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;-  250-ctf.lasne.pro
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;-  250-PIPELINING
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;-  250-SIZE 10240000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;-  250-ETRN
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;-  250-STARTTLS
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;-  250-ENHANCEDSTATUSCODES
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;-  250-8BITMIME
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;-  250-DSN
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;-  250 CHUNKING
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> -&gt; STARTTLS
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;-  220 2.0.0 Ready to start TLS
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">=== TLS started with cipher TLSv1.3:TLS_AES_256_GCM_SHA384:256
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">=== TLS client certificate not requested and not sent
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">=== TLS no client certificate set
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">=== TLS peer[0]   subject=[/CN=ctf.lasne.pro]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">===               commonName=[ctf.lasne.pro], subjectAltName=[DNS:ctf.lasne.pro] notAfter=[2025-04-06T13:15:36Z]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">=== TLS peer[1]   subject=[/C=US/O=Let&#39;</span>s Encrypt/CN<span style="color:#f92672">=</span>E6<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span>               commonName<span style="color:#f92672">=[</span>E6<span style="color:#f92672">]</span>, subjectAltName<span style="color:#f92672">=[]</span> notAfter<span style="color:#f92672">=[</span>2027-03-12T23:59:59Z<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> TLS peer certificate passed CA verification, failed host verification <span style="color:#f92672">(</span>using host localhost to verify<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span> ~&gt; EHLO ubuntu-s-1vcpu-2gb-fra1-01
+</span></span><span style="display:flex;"><span>&lt;~  250-ctf.lasne.pro
+</span></span><span style="display:flex;"><span>&lt;~  250-PIPELINING
+</span></span><span style="display:flex;"><span>&lt;~  250-SIZE <span style="color:#ae81ff">10240000</span>
+</span></span><span style="display:flex;"><span>&lt;~  250-ETRN
+</span></span><span style="display:flex;"><span>&lt;~  250-AUTH PLAIN LOGIN
+</span></span><span style="display:flex;"><span>&lt;~  250-AUTH<span style="color:#f92672">=</span>PLAIN LOGIN
+</span></span><span style="display:flex;"><span>&lt;~  250-ENHANCEDSTATUSCODES
+</span></span><span style="display:flex;"><span>&lt;~  250-8BITMIME
+</span></span><span style="display:flex;"><span>&lt;~  250-DSN
+</span></span><span style="display:flex;"><span>&lt;~  <span style="color:#ae81ff">250</span> CHUNKING
+</span></span><span style="display:flex;"><span> ~&gt; AUTH LOGIN
+</span></span><span style="display:flex;"><span>&lt;~  <span style="color:#ae81ff">334</span> VXNlcm5hbWU6
+</span></span><span style="display:flex;"><span> ~&gt; dG9tQGN0Zi5sYXNuZS5wcm8<span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>&lt;~  <span style="color:#ae81ff">334</span> UGFzc3dvcmQ6
+</span></span><span style="display:flex;"><span> ~&gt; bGl0dGxldG9tbXk<span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>&lt;~  <span style="color:#ae81ff">235</span> 2.7.0 Authentication successful
+</span></span><span style="display:flex;"><span> ~&gt; MAIL FROM:&lt;tom@ctf.lasne.pro&gt;
+</span></span><span style="display:flex;"><span>&lt;~  <span style="color:#ae81ff">250</span> 2.1.0 Ok
+</span></span><span style="display:flex;"><span> ~&gt; RCPT TO:&lt;lasneolivier@gmail.com&gt;
+</span></span><span style="display:flex;"><span>&lt;~  <span style="color:#ae81ff">250</span> 2.1.5 Ok
+</span></span><span style="display:flex;"><span> ~&gt; DATA
+</span></span><span style="display:flex;"><span>&lt;~  <span style="color:#ae81ff">354</span> End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;
+</span></span><span style="display:flex;"><span> ~&gt; Date: Tue, <span style="color:#ae81ff">07</span> Jan <span style="color:#ae81ff">2025</span> 13:31:48 +0000
+</span></span><span style="display:flex;"><span> ~&gt; To: lasneolivier@gmail.com
+</span></span><span style="display:flex;"><span> ~&gt; From: tom@ctf.lasne.pro
+</span></span><span style="display:flex;"><span> ~&gt; Subject: This is a test message
+</span></span><span style="display:flex;"><span> ~&gt; Message-Id: &lt;20250107133148.110965@ubuntu-s-1vcpu-2gb-fra1-01&gt;
+</span></span><span style="display:flex;"><span> ~&gt; X-Mailer: swaks v20240103.0 jetmore.org/john/code/swaks/
+</span></span><span style="display:flex;"><span> ~&gt; 
+</span></span><span style="display:flex;"><span> ~&gt; Hi mom!
+</span></span><span style="display:flex;"><span> ~&gt; 
+</span></span><span style="display:flex;"><span> ~&gt; 
+</span></span><span style="display:flex;"><span> ~&gt; .
+</span></span><span style="display:flex;"><span>&lt;~  <span style="color:#ae81ff">250</span> 2.0.0 Ok: queued as AE7BEF5C4D
+</span></span><span style="display:flex;"><span> ~&gt; QUIT
+</span></span><span style="display:flex;"><span>&lt;~  <span style="color:#ae81ff">221</span> 2.0.0 Bye
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> Connection closed with remote host.
+</span></span></code></pre></div><p>We recieve the mail, but this time it was encrypted with TLS.</p>
+<p><img src="/static/send_mail_docker/spam2.png" alt="Mail encrypted with TLS"></p>
+<h2 id="dkim">DKIM</h2>
+
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code style="background-color:initial;"># docker exec -it mailserver setup config dkim
+2025-01-07 13:45:05+00:00 <font color="#66D9EF">INFO </font> open-dkim: Creating DKIM private key &apos;/tmp/docker-mailserver/opendkim/keys/ctf.lasne.pro/mail.private&apos;
+</code></pre></div>
+
+
+<p>Your DKIM informations will be stored in <code>docker-data/dms/config/opendkim/keys/your-domain/mail.txt</code></p>
+
+</div>
+
+        <footer class="post-footer clearfix"><div class="share">
+    </div>
+</footer>
+    </article>
+</div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a href="http://localhost:43385/">Olivier LASNE</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
+                        <i class="fa fa-angle-up" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2025 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="http://localhost:43385/js/jquery-1.11.3.min.js"></script>
+        <script src="http://localhost:43385/js/jquery.fitvids.js"></script>
+        <script src="http://localhost:43385/js/scripts.js"></script>
+        
+    </body>
+</html>
+

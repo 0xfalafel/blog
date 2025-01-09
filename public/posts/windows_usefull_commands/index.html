@@ -1,24 +1,38 @@
 <!DOCTYPE html>
 <html>
-    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=43385&amp;path=livereload" data-no-instant defer></script>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Windows_usefull_commands &middot; </title>
-        <meta name="description" content="Deactivate Windows Firewall Set-NetFirewallProfile -Enabled False Make a user admin net localgroup &#34;Administrators&#34; /add &#34;UserAccountName&#34; Deactivate Windows Defender Get-MpComputerStatus | Select-Object -Property Antivirusenabled,AMServiceEnabled,AntispywareEnabled,BehaviorMonitorEnabled,IoavProtectionEnabled,NISEnabled,OnAccessProtectionEnabled,RealTimeProtectionEnabled,IsTamperProtected,AntivirusSignatureLastUpdatedCopied Disable Defender
-Set-MpPreference -DisableRealtimeMonitoring $true Disable the cloud-delivered protection:
-Set-MpPreference -MAPSReporting Disabled OpenSSH Install OpenSSH
-Get-WindowsCapability -Online | Where-Object Name -like &#39;OpenSSH*&#39; Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0 Start SSH
-Start-Service -Name sshd Set Startup Type automatic
-Set-Service sshd -StartupType Automatic Make Powershell the default shell
-New-ItemProperty -Path &#34;HKLM:\SOFTWARE\OpenSSH&#34; -Name DefaultShell -Value &#34;C:\Windows\System32\WindowsPowerShell\v1.">
+        <meta name="description" content="Deactivate Windows Firewall
+Set-NetFirewallProfile -Enabled False
+Make a user admin
+net localgroup &#34;Administrators&#34; /add &#34;UserAccountName&#34;
+Deactivate Windows Defender
+Get-MpComputerStatus | Select-Object -Property Antivirusenabled,AMServiceEnabled,AntispywareEnabled,BehaviorMonitorEnabled,IoavProtectionEnabled,NISEnabled,OnAccessProtectionEnabled,RealTimeProtectionEnabled,IsTamperProtected,AntivirusSignatureLastUpdatedCopied
+Disable Defender
+Set-MpPreference -DisableRealtimeMonitoring $true
+Disable the cloud-delivered protection:
+Set-MpPreference -MAPSReporting Disabled
+OpenSSH
+Install OpenSSH
+Get-WindowsCapability -Online | Where-Object Name -like &#39;OpenSSH*&#39;
+Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+Start SSH
+Start-Service -Name sshd
+Set Startup Type automatic
+Set-Service sshd -StartupType Automatic
+Make Powershell the default shell
+New-ItemProperty -Path &#34;HKLM:\SOFTWARE\OpenSSH&#34; -Name DefaultShell -Value &#34;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&#34; -PropertyType String -Force
+">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
-        <meta name="generator" content="Hugo 0.128.2">
+        <meta name="generator" content="Hugo 0.140.2">
         <meta name="robots" content="index,follow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
-        <link rel="stylesheet" href="http://localhost:1313/dist/site.css">
-        <link rel="stylesheet" href="http://localhost:1313/dist/syntax.css">
+        <link rel="stylesheet" href="http://localhost:43385/dist/site.css">
+        <link rel="stylesheet" href="http://localhost:43385/dist/syntax.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
         
@@ -30,9 +44,6 @@ New-ItemProperty -Path &#34;HKLM:\SOFTWARE\OpenSSH&#34; -Name DefaultShell -Valu
     </head>
     <body>
         
-  
-
-
 
         <div id="wrapper">
             <header class="site-header">
@@ -40,7 +51,7 @@ New-ItemProperty -Path &#34;HKLM:\SOFTWARE\OpenSSH&#34; -Name DefaultShell -Valu
                     <div class="site-title-wrapper">
                         
                             <h1 class="site-title">
-                                <a href="http://localhost:1313/">Olivier LASNE</a>
+                                <a href="http://localhost:43385/">Olivier LASNE</a>
                             </h1>
                         
                         
@@ -109,7 +120,7 @@ New-ItemProperty -Path &#34;HKLM:\SOFTWARE\OpenSSH&#34; -Name DefaultShell -Valu
             <div class="container">
                 <div class="site-title-wrapper">
                     <h1 class="site-title">
-                        <a href="http://localhost:1313/">Olivier LASNE</a>
+                        <a href="http://localhost:43385/">Olivier LASNE</a>
                     </h1>
                     <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
                         <i class="fa fa-angle-up" aria-hidden="true"></i>
@@ -117,7 +128,7 @@ New-ItemProperty -Path &#34;HKLM:\SOFTWARE\OpenSSH&#34; -Name DefaultShell -Valu
                 </div>
 
                 <p class="footer-copyright">
-                    <span>&copy; 2024 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                    <span>&copy; 2025 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
                 </p>
                 <p class="footer-copyright">
                     <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
@@ -126,9 +137,9 @@ New-ItemProperty -Path &#34;HKLM:\SOFTWARE\OpenSSH&#34; -Name DefaultShell -Valu
             </div>
         </footer>
 
-        <script src="http://localhost:1313/js/jquery-1.11.3.min.js"></script>
-        <script src="http://localhost:1313/js/jquery.fitvids.js"></script>
-        <script src="http://localhost:1313/js/scripts.js"></script>
+        <script src="http://localhost:43385/js/jquery-1.11.3.min.js"></script>
+        <script src="http://localhost:43385/js/jquery.fitvids.js"></script>
+        <script src="http://localhost:43385/js/scripts.js"></script>
         
     </body>
 </html>
