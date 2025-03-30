@@ -2,38 +2,38 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Olivier LASNE</title>
-    <link>http://localhost:46465/tags/</link>
+    <link>http://localhost:1313/tags/</link>
     <description>Recent content in Tags on Olivier LASNE</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 03 Aug 2024 09:47:56 +0200</lastBuildDate>
-    <atom:link href="http://localhost:46465/tags/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Bypass</title>
-      <link>http://localhost:46465/tags/bypass/</link>
+      <link>http://localhost:1313/tags/bypass/</link>
       <pubDate>Sat, 03 Aug 2024 09:47:56 +0200</pubDate>
-      <guid>http://localhost:46465/tags/bypass/</guid>
+      <guid>http://localhost:1313/tags/bypass/</guid>
       <description></description>
     </item>
     <item>
       <title>Censorship</title>
-      <link>http://localhost:46465/tags/censorship/</link>
+      <link>http://localhost:1313/tags/censorship/</link>
       <pubDate>Sat, 03 Aug 2024 09:47:56 +0200</pubDate>
-      <guid>http://localhost:46465/tags/censorship/</guid>
+      <guid>http://localhost:1313/tags/censorship/</guid>
       <description></description>
     </item>
     <item>
       <title>Ssh</title>
-      <link>http://localhost:46465/tags/ssh/</link>
+      <link>http://localhost:1313/tags/ssh/</link>
       <pubDate>Sat, 03 Aug 2024 09:47:56 +0200</pubDate>
-      <guid>http://localhost:46465/tags/ssh/</guid>
+      <guid>http://localhost:1313/tags/ssh/</guid>
       <description></description>
     </item>
     <item>
       <title>Vpn</title>
-      <link>http://localhost:46465/tags/vpn/</link>
+      <link>http://localhost:1313/tags/vpn/</link>
       <pubDate>Sat, 03 Aug 2024 09:47:56 +0200</pubDate>
-      <guid>http://localhost:46465/tags/vpn/</guid>
+      <guid>http://localhost:1313/tags/vpn/</guid>
       <description></description>
     </item>
   </channel>

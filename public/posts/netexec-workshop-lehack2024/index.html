@@ -1,27 +1,25 @@
 <!DOCTYPE html>
 <html>
-    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=46465&amp;path=livereload" data-no-instant defer></script>
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Writeup: Workshop Netexec LeHack 2024 &middot; </title>
         <meta name="description" content="
 Mise à jour du 19 septembre 2024: si vous souhaitez refaire ce lab. Vous pouvez désormais l&rsquo;installer en local avec Vargant: https://github.com/Pennyw0rth/NetExec-Lab/tree/main/LeHack-2024.
 
-
 Mise à jour du 11 juillet 2024: ajout de ce qui peut être détecté avec Bloodhound. Un grand merci à Maël et Rayan qui m&rsquo;ont partagé leurs extract Bloodhound.
-
 Introduction
 Cette année encore, @mpgn nous a régalé un workshop Active Directory à LeHack 2024.
 L&rsquo;accès était fourni via un fichier de configuration openvpn.
 Le réseau 10.0.0.0/24 était composé de 4 machines, dans un thème astérix pour cette année.">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
-        <meta name="generator" content="Hugo 0.140.2">
+        <meta name="generator" content="Hugo 0.145.0">
         <meta name="robots" content="index,follow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
-        <link rel="stylesheet" href="http://localhost:46465/dist/site.css">
-        <link rel="stylesheet" href="http://localhost:46465/dist/syntax.css">
+        <link rel="stylesheet" href="http://localhost:1313/dist/site.css">
+        <link rel="stylesheet" href="http://localhost:1313/dist/syntax.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
         
@@ -40,7 +38,7 @@ Le réseau 10.0.0.0/24 était composé de 4 machines, dans un thème astérix po
                     <div class="site-title-wrapper">
                         
                             <h1 class="site-title">
-                                <a href="http://localhost:46465/">Olivier LASNE</a>
+                                <a href="http://localhost:1313/">Olivier LASNE</a>
                             </h1>
                         
                         
@@ -74,11 +72,9 @@ Le réseau 10.0.0.0/24 était composé de 4 machines, dans un thème astérix po
     
 
     <blockquote>
-<p>Mise à jour du 19 septembre 2024: si vous souhaitez refaire ce lab. Vous pouvez désormais l&rsquo;installer en local avec Vargant: <a href="https://github.com/Pennyw0rth/NetExec-Lab/tree/main/LeHack-2024">https://github.com/Pennyw0rth/NetExec-Lab/tree/main/LeHack-2024</a>.</p>
-</blockquote>
+<p>Mise à jour du 19 septembre 2024: si vous souhaitez refaire ce lab. Vous pouvez désormais l&rsquo;installer en local avec Vargant: <a href="https://github.com/Pennyw0rth/NetExec-Lab/tree/main/LeHack-2024">https://github.com/Pennyw0rth/NetExec-Lab/tree/main/LeHack-2024</a>.</p></blockquote>
 <blockquote>
-<p>Mise à jour du 11 juillet 2024: ajout de ce qui peut être détecté avec <strong>Bloodhound</strong>. Un grand merci à <a href="https://www.linkedin.com/in/mael-rolland/">Maël</a> et <a href="https://x.com/rayanlecat">Rayan</a> qui m&rsquo;ont partagé leurs extract <em>Bloodhound</em>.</p>
-</blockquote>
+<p>Mise à jour du 11 juillet 2024: ajout de ce qui peut être détecté avec <strong>Bloodhound</strong>. Un grand merci à <a href="https://www.linkedin.com/in/mael-rolland/">Maël</a> et <a href="https://x.com/rayanlecat">Rayan</a> qui m&rsquo;ont partagé leurs extract <em>Bloodhound</em>.</p></blockquote>
 <h1 id="introduction">Introduction</h1>
 <p>Cette année encore, <a href="https://x.com/mpgn_x64">@mpgn</a> nous a régalé un <a href="https://lehack.org/track/active-directory-pwnage-with-netexec/">workshop Active Directory</a> à <strong>LeHack 2024</strong>.</p>
 <p>L&rsquo;accès était fourni via un fichier de configuration <em>openvpn</em>.<br>
@@ -306,8 +302,7 @@ drw-rw-rw-          0  Sun Jul  7 00:11:13 2024 ..
 <p>Ave, César !</p>
 <p>Notre espion a réussi à s&rsquo;infiltrer dans le village gaulois. Il a déposé un message avec les instructions pour récupérer les plans dans le camp romain avoisinant le village !</p>
 <p>Voici les identifiants pour récupérer le message: heftepix / BnfMQ9QI81Tz</p>
-<p>Merci de détruire cette tablette après lecture !</p>
-</blockquote>
+<p>Merci de détruire cette tablette après lecture !</p></blockquote>
 <p><strong>Identifants:</strong></p>
 <pre><code>heftepix:BnfMQ9QI81Tz
 </code></pre>
@@ -363,8 +358,7 @@ ls: Erreur fatale: Certificate verification: Not trusted (EB:E5:DA:63:48:F8:3A:5
 <p>Ave, César !</p>
 <p>J&rsquo;ai envoyé un messager avec les plans du village. Il aura besoin de rentrer discrètement dans le camp et remettra les plans au commandant du camp.
 Le mot de passe pour entrer dans le camp sera le suivant : wUSYIuhhWy!!12OL , il faudra prévenir la sentinelle local à ce poste pour qu&rsquo;il puisse s&rsquo;authentifier sans encombre !!!</p>
-<p>J&rsquo;ai aussi entendu dire que le capitaine Lapsus était passé dans le camp le mois dernier. J&rsquo;espère qu&rsquo;il n&rsquo;a pas laissé de trace !</p>
-</blockquote>
+<p>J&rsquo;ai aussi entendu dire que le capitaine Lapsus était passé dans le camp le mois dernier. J&rsquo;espère qu&rsquo;il n&rsquo;a pas laissé de trace !</p></blockquote>
 <p>On a quelques indices avec une sentinelle <em><strong>local</strong></em>, et un capitaine Lapsus (<strong>LAPS</strong> ?), qui peut-être aurait laissé des traces.<br>
 On a surtout un <strong>mot de passe</strong> à tester:</p>
 <pre><code>wUSYIuhhWy!!12OL
@@ -658,13 +652,11 @@ NL$KM:831e11da646a29901b2381dc73416771ffc6dcb9ee0a00bdffe43ea75dee52dff9a9361c6d
 
 <p>L&rsquo;utilisateur <code>MSOL_80541c18ebaa</code> ressort comme étant intéressant. On note pour plus tard cet utilisateur.</p>
 <blockquote>
-<p>MSOL_80541c18ebaa - Account created by Microsoft Azure Active Directory Connect with installation identifier 80541c18ebaa4ce0a259edbe39a92547 running on computer REFERENDUM configured to synchronize to tenant lehack275gmail.onmicrosoft.com. This account must have directory replication permissions in the local Active Directory and write permission on certain attributes to enable Hybrid Deployment.</p>
-</blockquote>
+<p>MSOL_80541c18ebaa - Account created by Microsoft Azure Active Directory Connect with installation identifier 80541c18ebaa4ce0a259edbe39a92547 running on computer REFERENDUM configured to synchronize to tenant lehack275gmail.onmicrosoft.com. This account must have directory replication permissions in the local Active Directory and write permission on certain attributes to enable Hybrid Deployment.</p></blockquote>
 <h2 id="dpapi">DPAPI</h2>
 <p>L&rsquo;indice de <code>plans.txt</code> nous indique qu&rsquo;il peut être intéressant de chercher si des traces sont restées sur les serveurs.</p>
 <blockquote>
-<p>J’ai aussi entendu dire que le capitaine Lapsus était passé dans le camp le mois dernier. J’espère qu’il n’a pas laissé de trace !</p>
-</blockquote>
+<p>J’ai aussi entendu dire que le capitaine Lapsus était passé dans le camp le mois dernier. J’espère qu’il n’a pas laissé de trace !</p></blockquote>
 <p>On peut utiliser <strong><code>--dpapi</code></strong> pour récupérer les secrets protégés par la <strong>DPAPI</strong>, tels que les <strong>mots de passe</strong> de <strong>Chrome</strong>.</p>
 
 
@@ -752,8 +744,7 @@ Pour varier on utilise cette fois l&rsquo;option <code>--lsa</code>.</p>
 <h2 id="msol">MSOL</h2>
 <p>C&rsquo;est le moment de revenir au compte <code>MSOL_80541c18ebaa</code> que nous avions identifié précédemment, dont voici la description.</p>
 <blockquote>
-<p>MSOL_80541c18ebaa - Account created by Microsoft Azure Active Directory Connect with installation identifier 80541c18ebaa4ce0a259edbe39a92547 <strong>running on computer REFERENDUM</strong> configured to synchronize to tenant lehack275gmail.onmicrosoft.com. This account must <strong>have directory replication permissions</strong> in <strong>the local Active Directory</strong> and <strong>write permission</strong> on certain attributes to enable Hybrid Deployment.</p>
-</blockquote>
+<p>MSOL_80541c18ebaa - Account created by Microsoft Azure Active Directory Connect with installation identifier 80541c18ebaa4ce0a259edbe39a92547 <strong>running on computer REFERENDUM</strong> configured to synchronize to tenant lehack275gmail.onmicrosoft.com. This account must <strong>have directory replication permissions</strong> in <strong>the local Active Directory</strong> and <strong>write permission</strong> on certain attributes to enable Hybrid Deployment.</p></blockquote>
 <p>Si vous n&rsquo;êtes, comme moi, pas familier avec les <strong>comptes <em>MSOL</em></strong> (Microsoft Online Services). Sachez qu&rsquo;il s&rsquo;agit de comptes utilisés pour <strong>synchroniser</strong> un <strong>Active Directory</strong> et un <strong>Azure Active Directory</strong>.</p>
 <p>Ainsi un utilisateur pour utiliser ses identifiants Active Directory sur Azure AD, et Office 365.<br>
 Les comptes MSOL ont généralement des droits élevés pour synchroniser les utilisateurs, groupes, et autres objets du domaine. Plus d&rsquo;information ici : <a href="https://www.tevora.com/threat-blog/targeting-msol-accounts-to-compromise-internal-networks/">https://www.tevora.com/threat-blog/targeting-msol-accounts-to-compromise-internal-networks/</a>.</p>
@@ -1383,7 +1374,7 @@ L&rsquo;an prochain, je préparerais un <em>Bloodhound</em> avant le workshop</p
             <div class="container">
                 <div class="site-title-wrapper">
                     <h1 class="site-title">
-                        <a href="http://localhost:46465/">Olivier LASNE</a>
+                        <a href="http://localhost:1313/">Olivier LASNE</a>
                     </h1>
                     <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
                         <i class="fa fa-angle-up" aria-hidden="true"></i>
@@ -1400,9 +1391,9 @@ L&rsquo;an prochain, je préparerais un <em>Bloodhound</em> avant le workshop</p
             </div>
         </footer>
 
-        <script src="http://localhost:46465/js/jquery-1.11.3.min.js"></script>
-        <script src="http://localhost:46465/js/jquery.fitvids.js"></script>
-        <script src="http://localhost:46465/js/scripts.js"></script>
+        <script src="http://localhost:1313/js/jquery-1.11.3.min.js"></script>
+        <script src="http://localhost:1313/js/jquery.fitvids.js"></script>
+        <script src="http://localhost:1313/js/scripts.js"></script>
         
     </body>
 </html>

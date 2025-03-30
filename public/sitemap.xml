@@ -2,42 +2,72 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:46465/</loc>
+    <loc>http://localhost:1313/posts/introducing_rcat/</loc>
+    <lastmod>2025-03-30T17:19:44+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/</loc>
+    <lastmod>2025-03-30T17:19:44+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/</loc>
+    <lastmod>2025-03-30T17:19:44+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/send_mail_with_docker/</loc>
     <lastmod>2025-01-07T09:34:57+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:46465/posts/</loc>
-    <lastmod>2025-01-07T09:34:57+01:00</lastmod>
+    <loc>http://localhost:1313/posts/deploy_ctfd/</loc>
+    <lastmod>2025-01-06T10:29:08+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:46465/posts/ad_lab_part1/</loc>
+    <loc>http://localhost:1313/posts/package_rust_gtk4_with_flatpak/</loc>
+    <lastmod>2024-12-21T14:49:47+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/windows_usefull_commands/</loc>
+    <lastmod>2024-09-25T16:58:15+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/fix_virtualbox/</loc>
+    <lastmod>2024-09-25T11:52:27+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/ad_lab_part2/</loc>
+    <lastmod>2024-09-20T17:47:23+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/ad_lab_part1/</loc>
     <lastmod>2024-09-20T10:09:12+02:00</lastmod>
   </url><url>
-    <loc>http://localhost:46465/tags/bypass/</loc>
+    <loc>http://localhost:1313/posts/offline_websites/</loc>
+    <lastmod>2024-08-12T22:08:15+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/bypass/</loc>
     <lastmod>2024-08-03T09:47:56+02:00</lastmod>
   </url><url>
-    <loc>http://localhost:46465/tags/censorship/</loc>
+    <loc>http://localhost:1313/tags/censorship/</loc>
     <lastmod>2024-08-03T09:47:56+02:00</lastmod>
   </url><url>
-    <loc>http://localhost:46465/tags/ssh/</loc>
+    <loc>http://localhost:1313/tags/ssh/</loc>
     <lastmod>2024-08-03T09:47:56+02:00</lastmod>
   </url><url>
-    <loc>http://localhost:46465/tags/</loc>
+    <loc>http://localhost:1313/tags/</loc>
     <lastmod>2024-08-03T09:47:56+02:00</lastmod>
   </url><url>
-    <loc>http://localhost:46465/tags/vpn/</loc>
+    <loc>http://localhost:1313/tags/vpn/</loc>
     <lastmod>2024-08-03T09:47:56+02:00</lastmod>
   </url><url>
-    <loc>http://localhost:46465/posts/bypass_country_restrictions_with_ssh/</loc>
+    <loc>http://localhost:1313/posts/bypass_country_restrictions_with_ssh/</loc>
     <lastmod>2024-08-03T09:47:56+02:00</lastmod>
   </url><url>
-    <loc>http://localhost:46465/posts/netexec-workshop-lehack2024/</loc>
+    <loc>http://localhost:1313/posts/netexec-workshop-lehack2024/</loc>
     <lastmod>2024-07-12T15:42:13+02:00</lastmod>
   </url><url>
-    <loc>http://localhost:46465/posts/trick-or-deal/</loc>
+    <loc>http://localhost:1313/posts/trick-or-deal/</loc>
     <lastmod>2023-06-07T12:54:04+02:00</lastmod>
   </url><url>
-    <loc>http://localhost:46465/posts/my-first-post/</loc>
+    <loc>http://localhost:1313/posts/colored-terminal-in-blog-posts/</loc>
+    <lastmod>2023-05-06T17:45:40+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/my-first-post/</loc>
     <lastmod>2023-05-05T18:50:40+02:00</lastmod>
   </url><url>
-    <loc>http://localhost:46465/categories/</loc>
+    <loc>http://localhost:1313/posts/using-nix-packages/</loc>
+    <lastmod>2023-05-05T18:50:40+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/</loc>
   </url>
 </urlset>
