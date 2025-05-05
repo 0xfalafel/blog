@@ -219,6 +219,8 @@ modules:
       - cargo-sources.json
 ```
 
+⚠️ Make sure that `app-id` math the _application id_ in your code.
+
 Let's explore a bit what we have here.
 
 #### Common Flatpak informations:
@@ -242,7 +244,7 @@ Let's explore a bit what we have here.
 We have __one last thing__ to do before building our app.  
 You might have notice is the `cargo-sources.json` in the manifest.
 
-To build the app with `cargo` in a flatpak. We need to generate this file using the script [`flatpak-cargo-generator.py`](https://github.com/flatpak/flatpak-builder-tools/blob/master/cargo/flatpak-cargo-generator.py) from the [flatpak-builder-tools](https://github.com/flatpak/flatpak-builder-tools) repository.
+To build the app with `cargo` in a flatpak. We need to generate this file using the script [`flatpak-cargo-generator.py`](https://github.com/flatpak/flatpak-builder-tools/blob/master/cargo/flatpak-cargo-generator.py) from the [flatpak-builder-tools](https://github.com/flatpak/flatpak-builder-tools) repository (in the `cargo` folder).
 
 ```bash
 python3 flatpak-cargo-generator.py Cargo.lock -o cargo-sources.json
