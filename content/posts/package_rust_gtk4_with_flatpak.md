@@ -219,7 +219,7 @@ modules:
       - cargo-sources.json
 ```
 
-⚠️ Make sure that `app-id` math the _application id_ in your code.
+⚠️ Make sure that `app-id` match the _application id_ in your code.
 
 Let's explore a bit what we have here.
 
